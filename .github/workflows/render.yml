@@ -1,5 +1,6 @@
-# Render video TikTok di runner GitHub: ffmpeg sudah terpasang di ubuntu-24.04,
-# 4 core dipakai paralel oleh render.py. Hasilnya SATU file MP4 di Artifacts.
+# Render video TikTok di runner GitHub. Image ubuntu-24.04 TIDAK bawa ffmpeg
+# (run pertama gagal karena itu) → dipasang lewat apt. 4 core dipakai paralel
+# oleh render.py. Hasilnya SATU file MP4 di Artifacts.
 name: Render TikTok
 
 on:
@@ -18,6 +19,10 @@ permissions:
 concurrency:
   group: render-${{ github.ref }}
   cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash  # -eo pipefail: kegagalan di tengah pipe nggak ketutup `head`
 
 jobs:
   render:
@@ -38,8 +43,12 @@ jobs:
       - name: Dependensi (versi dipatok)
         run: pip install --no-cache-dir --disable-pip-version-check 'Pillow==12.3.0' 'numpy==2.5.3'
 
-      - name: ffmpeg tersedia
-        run: ffmpeg -hide_banner -version | head -n 1
+      - name: ffmpeg (apt, image runner tidak menyertakannya)
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ffmpeg >/dev/null
+          ffmpeg -hide_banner -version | head -n 1
+          ffprobe -hide_banner -version | head -n 1
 
       - name: Timeline + cek semua scene (1 frame / 2 detik, tanpa encode)
         run: |
