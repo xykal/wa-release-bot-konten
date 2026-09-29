@@ -5,21 +5,21 @@ Pakai:  python3 render/render.py            → keluaran/tiktok-wa-release-bot-e
         python3 render/render.py --frame 47.5 cek.png
         python3 render/render.py --info     → cetak timeline
 
-Urutan lapisan tiap frame: latar + glow + ikon clay melayang → HP (layar scene + light sweep) → judul kinetik +
-ilustrasi asli → outro → stiker meme → konfeti → subtitle karaoke → watermark/footer/progress → efek pasca
-(punch-in, guncang, kilat). Semua fungsi murni dari `t` supaya bisa dirender paralel.
+Urutan lapisan tiap frame: latar + glow + ikon clay melayang → HP (bingkai tipis anti-alias, layar scene, light
+sweep) → judul kinetik + ilustrasi asli → outro → stiker meme → konfeti → subtitle karaoke → sting logo (scene 01)
+→ watermark/footer/progress → efek pasca (punch-in, guncang, kilat). Semua fungsi murni dari `t` supaya bisa paralel.
 """
 import math
 import os
 import sys
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gaya import (W, H, FPS, BRAND, NAMA_PAKET, font, F_BLACK, F_SEMI, F_REG, BG, BG2, GARIS, HIJAU_T, HIJAU_TUA,
-                  TEKS, TEKS2, e_out, e_back, prog, mix, lebar, kotak, pil_tembus, tempel, glow)
+                  TEKS, TEKS2, e_out, e_io, e_back, prog, mix, lebar, kotak, bulat, pil_tembus, tempel, glow)
 from aset import logo
 from audio import bangun_timeline
-from cue import efek_dari_cue
+from cue import efek_dari_cue, kapan
 from fx import judul_kinetik, gambar_ilus, gambar_stiker, konfeti, ikon_melayang, efek_pasca
 from layar_a import LAYAR_A, SW, SH
 from layar_b import LAYAR_B
@@ -30,6 +30,8 @@ LAYAR = {**LAYAR_A, **LAYAR_B}
 SCENES, TOTAL = bangun_timeline()
 EFEK = [e for sc in SCENES for e in efek_dari_cue(sc['cue'])]
 PX, PY = (W - SW) // 2, 262  # posisi isi layar HP
+TEPI, ATAS, PAD = 10, 14, 70  # bezel tipis kiri/kanan, atas/bawah; PAD = ruang bayangan di lapisan bingkai
+T_STING = kapan(SCENES[1], 'Kenalin,', 0.3)  # logo XyVerse nongol pas "Kenalin"
 _cache = {}
 
 
@@ -42,15 +44,37 @@ def latar():
         _cache['latar'] = im
         _cache['glow'] = glow(520, HIJAU_TUA, 90)
         _cache['glow2'] = glow(360, (20, 60, 90), 70)
-        mask = Image.new('L', (SW, SH), 0)
-        ImageDraw.Draw(mask).rounded_rectangle((0, 0, SW - 1, SH - 1), radius=28, fill=255)
-        _cache['mask'] = mask
-        band = pil_tembus((160, SH + 240))
+        S = 4
+        mask = Image.new('L', (SW * S, SH * S), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, SW * S - 1, SH * S - 1), radius=34 * S, fill=255)
+        _cache['mask'] = mask.reduce(S)
+        band = pil_tembus((64, SH + 240))
         bd = ImageDraw.Draw(band)
-        for x in range(160):
-            bd.line([(x, 0), (x, SH + 240)], fill=(255, 255, 255, int(70 * math.sin(math.pi * x / 160) ** 2)))
+        for x in range(64):
+            bd.line([(x, 0), (x, SH + 240)], fill=(255, 255, 255, int(85 * math.sin(math.pi * x / 64) ** 2)))
         _cache['sweep'] = band.rotate(16, resample=Image.BICUBIC, expand=True)
+        _cache['hp'] = _bingkai_hp()
     return _cache['latar'].copy()
+
+
+def _bingkai_hp():
+    """Bingkai HP tipis: digambar 4x lalu diperkecil (anti-alias), rim terang tipis, tombol samping, bayangan lembut."""
+    S = 4
+    w, h = SW + 2 * TEPI, SH + 2 * ATAS
+    big = pil_tembus(((w + 2 * PAD) * S, (h + 2 * PAD) * S))
+    d = ImageDraw.Draw(big)
+    p = PAD * S
+    d.rounded_rectangle((p - 3 * S, (PAD + 130) * S, p, (PAD + 172) * S), radius=2 * S, fill=(74, 82, 90, 255))  # volume
+    d.rounded_rectangle((p - 3 * S, (PAD + 184) * S, p, (PAD + 226) * S), radius=2 * S, fill=(74, 82, 90, 255))
+    d.rounded_rectangle((p + w * S, (PAD + 150) * S, p + (w + 3) * S, (PAD + 212) * S), radius=2 * S, fill=(74, 82, 90, 255))  # power
+    d.rounded_rectangle((p, p, p + w * S, p + h * S), radius=44 * S, fill=(70, 78, 86, 255))  # rim
+    d.rounded_rectangle((p + 2 * S, p + 2 * S, p + (w - 2) * S, p + (h - 2) * S), radius=42 * S, fill=(12, 16, 20, 255))  # bezel
+    kecil = big.reduce(S)
+    bayang = pil_tembus(kecil.size)
+    ImageDraw.Draw(bayang).rounded_rectangle((PAD + 6, PAD + 26, PAD + w + 6, PAD + h + 26), radius=44, fill=(0, 0, 0, 170))
+    bayang = bayang.filter(ImageFilter.GaussianBlur(26))
+    bayang.alpha_composite(kecil)
+    return bayang
 
 
 def scene_pada(t):
@@ -73,36 +97,36 @@ def judul_pada(sc, t):
 
 def gambar_hp(im, t):
     i, sc = scene_pada(t)
-    u_masuk = e_back(prog(t, INTRO - 0.2, 0.7))
+    u_masuk = e_back(prog(t, INTRO + 0.05, 0.75), 1.2)
     dy = (1 - u_masuk) * 900
     if t >= TOTAL - OUTRO:
         dy += e_out(prog(t, TOTAL - OUTRO, 0.4)) * 1100
-    ox, oy = PX - 25, PY - 40 + dy
-    d = ImageDraw.Draw(im)
-    kotak(d, (ox - 4, oy - 4, ox + SW + 54, oy + SH + 84), 52, fill=(0, 0, 0, 110))
-    kotak(d, (ox, oy, ox + SW + 50, oy + SH + 80), 48, fill=(24, 32, 38, 255), outline=GARIS + (255,), lebar_garis=3)
+    im.alpha_composite(_cache['hp'], (PX - TEPI - PAD, int(PY - ATAS - PAD + dy)))
     layar = _layar_transisi(sc, i, t)
-    u = prog(t, sc['t0'] + 0.1, 0.55)
-    if 0 < u < 1:  # light sweep: kilau miring lewat di kaca HP tiap ganti scene
+    u = prog(t, sc['t0'] + 0.15, 0.45)
+    if 0 < u < 1:  # light sweep: garis kilau tipis miring lewat di kaca HP tiap ganti scene
         layar = layar.copy()
-        tempel(layar, _cache['sweep'], (-260 + u * (SW + 420), -120))
+        tempel(layar, _cache['sweep'], (-300 + u * (SW + 380), -120))
     im.paste(layar, (PX, int(PY + dy)), _cache['mask'])
-    kotak(d, (W / 2 - 50, oy + 14, W / 2 + 50, oy + 30), 8, fill=(0, 0, 0, 255))
+    d = ImageDraw.Draw(im)
+    bulat(d, (W / 2 - 7, PY + dy + 9, W / 2 + 7, PY + dy + 23), (4, 6, 8))  # kamera punch-hole
 
 
 def _layar_transisi(sc, i, t):
-    """Geser kiri antar scene selama 0.35 dtk: layar lama keluar, layar baru masuk."""
+    """Ganti scene 0.4 dtk: layar lama geser kiri + pudar, layar baru masuk dari kanan sambil membesar 0.94→1."""
     _, _, mode = judul_pada(sc, t)[0]
     baru = LAYAR[sc['layar']](sc, t, mode)
-    u = prog(t, sc['t0'], 0.35)
+    u = prog(t, sc['t0'], 0.4)
     if i == 0 or u >= 1:
         return baru
+    e = e_io(u)
     lama_sc = SCENES[i - 1]
     lama = LAYAR[lama_sc['layar']](lama_sc, lama_sc['t1'] - 0.01, judul_pada(lama_sc, lama_sc['t1'] - 0.01)[0][2])
-    geser = int(e_out(u) * SW)
     out = Image.new('RGBA', (SW, SH), BG2 + (255,))
-    out.paste(lama, (-geser, 0))
-    out.paste(baru, (SW - geser, 0))
+    tempel(out, lama, (-e * SW * 0.35, 0), 1 - e)
+    s = 0.94 + 0.06 * e
+    b = baru.resize((int(SW * s), int(SH * s)))
+    tempel(out, b, ((1 - e) * SW * 0.6 + (SW - b.width) / 2, (SH - b.height) / 2), min(1.0, e * 1.4))
     return out
 
 
@@ -145,33 +169,31 @@ def gambar_subtitle(im, sc, t):
     tempel(im, lap, (0, 1122), alpha)
 
 
-def gambar_intro(im, t):
-    """Logo XyVerse asli (lockup utuh) nge-pop di tengah, kilau lewat, tagline masuk; lalu naik & pudar pas HP masuk."""
-    u_out = 1 - prog(t, INTRO - 0.15, 0.35)
-    if u_out <= 0:
+def gambar_sting(im, t):
+    """Logo XyVerse asli nge-pop di atas HP pas "Kenalin", kilau lewat, lalu terbang mengecil ke pojok jadi watermark."""
+    if not (T_STING <= t < T_STING + 2.1):
         return
+    dt = t - T_STING
+    u_in = e_back(prog(dt, 0, 0.5), 1.4)
+    u_go = e_io(prog(dt, 1.6, 0.5))
     lap = pil_tembus((W, H))
-    d = ImageDraw.Draw(lap)
-    d.rectangle((0, 0, W, H), fill=BG + (255,))
-    tempel(lap, _cache['glow'], (W / 2 - 260, 560 - 260), 0.9 * e_out(prog(t, 0.0, 0.6)))
-    s = e_back(prog(t, 0.05, 0.55))
-    if s > 0.02:
-        wm = logo('xyverse_logo', 460).copy()
-        u_k = prog(t, 0.7, 0.45)
-        if 0 < u_k < 1:  # kilau: band putih miring digeser, dimask pakai alpha wordmark
-            kilau = pil_tembus(wm.size)
-            x = -120 + u_k * (wm.width + 240)
-            ImageDraw.Draw(kilau).polygon([(x, 0), (x + 90, 0), (x + 40, wm.height), (x - 50, wm.height)], fill=(255, 255, 255, 170))
-            kilau.putalpha(ImageChops.multiply(kilau.getchannel('A'), wm.getchannel('A')))
-            wm.alpha_composite(kilau)
-        m = wm.resize((max(1, int(wm.width * s)), max(1, int(wm.height * s))))
-        tempel(lap, m, (W / 2 - m.width / 2, 560 - m.height / 2))
-    u_t = e_out(prog(t, 0.6, 0.3))
-    if u_t > 0:
-        f = font(F_SEMI, 22)
-        s2 = 'WA Release Bot  ·  Eps 2'
-        d.text((W / 2 - lebar(s2, f) / 2, 650 + (1 - u_t) * 20), s2, font=f, fill=TEKS2 + (int(255 * u_t),))
-    tempel(im, lap, (0, -(1 - u_out) * 60), u_out)
+    kotak(ImageDraw.Draw(lap), (0, 0, W, H), 0, fill=(0, 0, 0, int(140 * u_in * (1 - u_go))))
+    tempel(lap, _cache['glow'], (W / 2 - 260, 640 - 260), 0.9 * u_in * (1 - u_go))
+    wm = logo('xyverse_logo', 460).copy()
+    u_k = prog(dt, 0.55, 0.5)
+    if 0 < u_k < 1:
+        kilau = pil_tembus(wm.size)
+        x = -120 + u_k * (wm.width + 240)
+        ImageDraw.Draw(kilau).polygon([(x, 0), (x + 90, 0), (x + 40, wm.height), (x - 50, wm.height)], fill=(255, 255, 255, 170))
+        kilau.putalpha(ImageChops.multiply(kilau.getchannel('A'), wm.getchannel('A')))
+        wm.alpha_composite(kilau)
+    lebar_akhir = 110
+    lb = max(2, int((460 * u_in) * (1 - u_go) + lebar_akhir * u_go))
+    m = wm.resize((lb, max(1, int(wm.height * lb / wm.width))))
+    cx = W / 2 * (1 - u_go) + (28 + lebar_akhir / 2) * u_go
+    cy = 640 * (1 - u_go) + (24 + m.height / 2) * u_go
+    tempel(lap, m, (cx - m.width / 2, cy - m.height / 2))
+    tempel(im, lap, (0, 0))
 
 
 def gambar_outro(im, t):
@@ -195,14 +217,12 @@ def gambar_outro(im, t):
 
 
 def gambar_bingkai(im, t):
-    """Watermark atas (mark asli + nama), footer brand, progress bar."""
+    """Watermark (lockup XyVerse kecil, muncul setelah sting), footer brand, progress bar."""
     d = ImageDraw.Draw(im)
-    a = e_out(prog(t, INTRO - 0.1, 0.4))
-    if a > 0:
-        tempel(im, logo('xyverse_mark', 30), (28, 22), a)
+    if t >= T_STING + 2.1:
+        tempel(im, logo('xyverse_logo', 110), (28, 24))
         f = font(F_SEMI, 15)
-        d.text((68, 28), 'WA Release Bot  ·  Eps 2', font=f, fill=TEKS2 + (int(255 * a),))
-        d.text((W - 28 - lebar('@xykal', f), 28), '@xykal', font=f, fill=TEKS2 + (int(255 * a),))
+        d.text((W - 28 - lebar('@xykal', f), 28), '@xykal', font=f, fill=TEKS2 + (255,))
     f = font(F_REG, 14)
     kaki = f'{NAMA_PAKET} · {BRAND}'
     d.text((W / 2 - lebar(kaki, f) / 2, 1246), kaki, font=f, fill=TEKS2)
@@ -214,7 +234,7 @@ def frame(t):
     im = latar()
     tempel(im, _cache['glow'], (W / 2 - 260 + math.sin(t * 0.5) * 30, 380 + math.cos(t * 0.4) * 30), 0.55)
     tempel(im, _cache['glow2'], (-40 + math.sin(t * 0.3) * 20, 900), 0.6)
-    ikon_melayang(im, t, e_out(prog(t, INTRO - 0.2, 0.6)))
+    ikon_melayang(im, t, e_out(prog(t, INTRO + 0.3, 0.6)))
     i, sc = scene_pada(t)
     gambar_hp(im, t)
     if t < TOTAL - OUTRO + 0.2:
@@ -229,7 +249,7 @@ def frame(t):
     konfeti(im, sc, t)
     if t < TOTAL - OUTRO + 0.2:
         gambar_subtitle(im, sc, t)
-    gambar_intro(im, t)
+    gambar_sting(im, t)
     gambar_bingkai(im, t)
     return efek_pasca(im.convert('RGB'), t, EFEK)
 

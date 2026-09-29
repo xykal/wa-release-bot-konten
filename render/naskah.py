@@ -8,9 +8,9 @@ kata itu, judul dan layar ganti. Kata pemicu dicocokkan tanpa tanda baca.
 
 SCENES = [
     dict(vo='00', layar='masalah',
-         judul='Grup kemasukan *akun aneh?*',
-         tahap=[('Channel-nya', 'Channel *sepi?*', 1), ('Rilis', 'Rilis *lupa diumumin?*', 2), ('Tenang', 'Ada *satu bot* buat semuanya', 3)],
-         teks='Grup WhatsApp kamu sering kemasukan akun aneh? Channel-nya sepi? Rilis aplikasi lupa diumumin? Tenang, ada satu bot yang ngurus semuanya.'),
+         judul='Grup kemasukan *akun judol?*',
+         tahap=[('Channel', 'Channel *sepi?*', 1), ('Rilis', 'Rilis *lupa diumumin?*', 2), ('Tenang.', '*Satu bot*, semuanya beres', 3)],
+         teks='Grup kamu kemasukan akun judol jam dua pagi? Channel sepi kayak kuburan? Rilis aplikasi lupa diumumin? Tenang. Satu bot, semuanya beres.'),
     dict(vo='01', layar='beranda',
          judul='Kenalin, *WA Release Bot*',
          tahap=[('Nggak', 'Jalan *dari HP*, tanpa server', 1)],
@@ -26,15 +26,15 @@ SCENES = [
     dict(vo='04', layar='grup',
          judul='Penjaga grup *otomatis*',
          tahap=[('Yang', 'Pernah keluar? *Ditolak.*', 1), ('Kamu', 'Grup aman *tanpa dipantau*', 2)],
-         teks='Buat grup, ada penjaga otomatis. Permintaan gabung dicek satu-satu. Yang dulu udah keluar, atau pernah di-kick? Ditolak. Kamu nggak perlu mantengin lagi.'),
+         teks='Buat grup, ada penjaga otomatis. Permintaan gabung dicek satu-satu. Yang dulu udah keluar, atau pernah di-kick? Ditolak. Hehe. Kamu nggak perlu mantengin lagi.'),
     dict(vo='05', layar='lagu',
          judul='Tiap hari *ada lagu*',
          tahap=[('Ada', '*148 lagu* + yang lagi trend', 1)],
          teks='Channel kamu nggak bakal sepi. Tiap hari bot ngirim potongan lagu enam puluh detik, dalam bentuk voice note. Ada seratus empat puluh delapan lagu, plus yang lagi trend minggu ini.'),
     dict(vo='06', layar='caption',
          judul='Caption-nya *kena banget*',
-         tahap=[('Yang', 'Contoh gaya *sok bijak*', 1)],
-         teks='Caption-nya kena banget. Kadang galau, kadang motivasi, kadang nyindir, kadang ayat. Yang ini contohnya: Katanya udah move on. Terus kenapa lagu ini masih di-repeat?'),
+         tahap=[('Yang', 'Contoh gaya *nyindir*', 1)],
+         teks='Caption-nya kena banget. Kadang galau, kadang motivasi, kadang ayat, kadang nyindir. Yang nyindir contohnya gini: ditelpon berdering, ternyata lagi gaya miring. Hahaha, parah sih.'),
     dict(vo='07', layar='lapor',
          judul='Gagal? *Lapor sendiri*',
          tahap=[('Dan', 'Selesai kerja? *Tidur.*', 1)],
@@ -49,8 +49,8 @@ SCENES = [
          teks='Menurut kamu, fitur apa lagi yang harus ditambahin? Tulis di komen ya. Follow, biar nggak ketinggalan episode berikutnya!'),
 ]
 
-# Intro logo XyVerse (sebelum scene 00), jeda sebelum VO mulai di tiap scene, jeda setelah VO habis, outro (logo + CTA).
-INTRO, JEDA_AWAL, JEDA_AKHIR, OUTRO = 1.4, 0.35, 0.45, 2.2
+# Intro sebelum scene 00 (0 = hook langsung, logo XyVerse muncul sebagai sting di scene 01), jeda sebelum VO mulai di tiap scene, jeda setelah VO habis, outro (logo + CTA).
+INTRO, JEDA_AWAL, JEDA_AKHIR, OUTRO = 0.0, 0.35, 0.45, 2.2
 
 # Ilustrasi asli dari app (aset/logo/) yang nongol di pojok kanan atas tiap scene; None = judul pakai lebar penuh.
 ILUS = {'masalah': None, 'beranda': 'ilus_hosting', 'pairing': 'melayang_kode', 'rilis': 'ilus_rilis', 'grup': 'ilus_grup',

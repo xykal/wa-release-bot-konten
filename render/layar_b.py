@@ -1,6 +1,6 @@
 """Layar HP scene 05-09: lagu, caption, lapor + tidur, GitHub, CTA."""
 import math
-from gaya import (font, F_BLACK, F_SEMI, F_REG, BG, KARTU, GARIS, HIJAU, HIJAU_T, HIJAU_TUA, GELEMBUNG, TEKS, TEKS2,
+from gaya import (bulat, font, F_BLACK, F_SEMI, F_REG, BG, KARTU, GARIS, HIJAU, HIJAU_T, HIJAU_TUA, GELEMBUNG, TEKS, TEKS2,
                   MERAH, KUNING, PUTIH, kotak, e_back, ikon_centang, chip, lebar, bungkus)
 from audio import kapan
 from layar_a import SW, kanvas, bar_atas, gelembung_teks, gelembung, pop, kartu
@@ -18,7 +18,7 @@ def _voice_note(d, y, t, t_mulai, judul, artis, trend=False, muncul=1.0):
         kotak(d, (cx - lb * s / 2, cy - tinggi * s / 2, cx + lb * s / 2, cy + tinggi * s / 2), 12, fill=KARTU)
         return y + tinggi + 8
     kotak(d, (x0, y, x0 + lb, y + tinggi), 12, fill=KARTU)
-    d.ellipse((x0 + 14, y + 14, x0 + 58, y + 58), fill=HIJAU_T)
+    bulat(d, (x0 + 14, y + 14, x0 + 58, y + 58), fill=HIJAU_T)
     d.polygon([(x0 + 31, y + 25), (x0 + 31, y + 47), (x0 + 49, y + 36)], fill=BG)
     maju = (t - t_mulai) / 60.0 % 1.0
     for i in range(34):
@@ -63,8 +63,8 @@ def layar_lagu(sc, t, mode):
 # ---------- 06 caption: gaya-gaya ----------
 GAYA_CONTOH = (('galau,', 'galau', 'Nggak semua yang lewat harus dilupain. Sebagian cukup diputer ulang.'),
                ('motivasi,', 'motivasi', 'Nggak apa-apa jalan pelan. Yang penting nggak balik ke orang yang sama.'),
-               ('nyindir,', 'nyindir', 'Santai, aku nggak nunggu kamu berubah. Aku nunggu diriku berhenti berharap.'),
-               ('ayat.', 'ayat', 'Maka, sesungguhnya beserta kesulitan ada kemudahan. — QS. Al-Insyirah: 5'))
+               ('ayat,', 'ayat', 'Maka, sesungguhnya beserta kesulitan ada kemudahan. — QS. Al-Insyirah: 5'),
+               ('nyindir.', 'nyindir', 'Santai, aku nggak nunggu kamu berubah. Aku nunggu diriku berhenti berharap.'))
 
 
 def layar_caption(sc, t, mode):
@@ -83,16 +83,16 @@ def layar_caption(sc, t, mode):
             lb = min(max([lebar(b, f) for b in baris] + [60]) + 28, SW - 120)
             chip(d, 14 + lb + 8, y_atas + 6, label, font(F_SEMI, 11), fill=HIJAU_TUA, warna=HIJAU_T)
     if mode >= 1:
-        t_m = sc['tahap_t'][0][0]
-        teks = 'Katanya udah move on. Terus kenapa lagu ini masih di-repeat?'
-        n = min(len(teks), int(max(0, t - t_m - 0.2) / 0.045))
+        t_m = kapan(sc, 'gini:', 3.0) - 0.2  # ngetik mulai pas narator bilang "gini:", selesai bareng kalimatnya
+        teks = 'Ditelpon berdering, ternyata lagi gaya miring.'
+        n = min(len(teks), int(max(0, t - t_m) / 0.05))
         if n > 0:
             f = font(F_SEMI, 15)
             baris = bungkus(teks[:n] + ('|' if n < len(teks) and int(t * 4) % 2 else ''), f, SW - 90)
             kotak(d, (14, 520, SW - 14, 520 + len(baris) * 22 + 46), 12, fill=GELEMBUNG)
             for i, b in enumerate(baris):
                 d.text((28, 532 + i * 22), b, font=f, fill=TEKS)
-            chip(d, 28, 520 + len(baris) * 22 + 16, 'sok bijak', font(F_SEMI, 11), fill=BG, warna=HIJAU_T)
+            chip(d, 28, 520 + len(baris) * 22 + 16, 'nyindir', font(F_SEMI, 11), fill=BG, warna=HIJAU_T)
     return im
 
 
@@ -119,8 +119,8 @@ def layar_lapor(sc, t, mode):
         u = pop(t, t_m, 0.5)
         cy = 330
         r = 70 * e_back(u)
-        d.ellipse((SW / 2 - r, cy - r, SW / 2 + r, cy + r), fill=KUNING)
-        d.ellipse((SW / 2 - r * 0.75 + r * 0.55, cy - r * 0.95, SW / 2 + r * 0.75 + r * 0.55, cy + r * 0.55), fill=(17, 27, 33))
+        bulat(d, (SW / 2 - r, cy - r, SW / 2 + r, cy + r), fill=KUNING)
+        bulat(d, (SW / 2 - r * 0.75 + r * 0.55, cy - r * 0.95, SW / 2 + r * 0.75 + r * 0.55, cy + r * 0.55), fill=(17, 27, 33))
         if u >= 1:
             for i in range(3):
                 w = (t - t_m) * 1.2 - i * 0.5
@@ -177,7 +177,7 @@ def layar_cta(sc, t, mode):
         if u <= 0:
             break
         kartu(d, (16, y, SW - 16, y + 70))
-        d.ellipse((30, y + 17, 66, y + 53), fill=HIJAU_TUA if 'kall' in nama else GARIS)
+        bulat(d, (30, y + 17, 66, y + 53), fill=HIJAU_TUA if 'kall' in nama else GARIS)
         d.text((80, y + 14), nama, font=font(F_SEMI, 13), fill=HIJAU_T if 'kall' in nama else TEKS2)
         d.text((80, y + 36), isi, font=font(F_REG, 14), fill=TEKS)
         y += 82

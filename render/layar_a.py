@@ -4,9 +4,9 @@ Semua digambar ulang tiap frame di kanvas SW x SH (isi layar HP), lalu render.py
 menempelkannya ke mockup HP. Waktu `t` selalu absolut (detik dari awal video).
 """
 from PIL import Image, ImageDraw
-from gaya import (font, F_BLACK, F_SEMI, F_REG, BG, BG2, KARTU, GARIS, HIJAU, HIJAU_T, HIJAU_TUA, GELEMBUNG,
+from gaya import (bulat, font, F_BLACK, F_SEMI, F_REG, BG, BG2, KARTU, GARIS, HIJAU, HIJAU_T, HIJAU_TUA, GELEMBUNG,
                   TEKS, TEKS2, MERAH, KUNING, PUTIH, kotak, bungkus, prog, e_out, e_back, ikon_centang,
-                  ikon_silang, chip, lebar)
+                  ikon_silang, chip, lebar, stempel)
 from audio import kapan
 from aset import logo
 
@@ -21,21 +21,21 @@ def kanvas():
         d = ImageDraw.Draw(im)
         for y in range(100, SH, 26):
             for x in range(8 + (y // 26 % 2) * 13, SW, 26):
-                d.ellipse((x, y, x + 3, y + 3), fill=(24, 36, 43, 255))
+                bulat(d, (x, y, x + 3, y + 3), fill=(24, 36, 43, 255))
         _wallpaper['w'] = im
     im = _wallpaper['w'].copy()
     _wallpaper['aktif'] = im  # dipakai bar_atas buat nempel logo (ImageDraw nggak bisa paste)
     return im, ImageDraw.Draw(im)
 
 
-def bar_atas(d, judul, sub='', warna=HIJAU_TUA):
+def bar_atas(d, judul, sub='', warna=HIJAU_TUA, waktu='12.00'):
     d.rectangle((0, 0, SW, 30), fill=BG)
-    d.text((18, 7), '12.00', font=font(F_SEMI, 14), fill=TEKS)
+    d.text((18, 7), waktu, font=font(F_SEMI, 14), fill=TEKS)
     d.rectangle((0, 30, SW, 92), fill=warna)
-    d.ellipse((16, 42, 54, 80), fill=KARTU)
+    bulat(d, (16, 42, 54, 80), fill=KARTU)
     if judul in ('WA Release Bot', 'Tautkan perangkat', 'Channel Kamu') and 'aktif' in _wallpaper:
         # avatar = mark XyVerse asli dari app, bukan lingkaran kosong
-        d.ellipse((16, 42, 54, 80), fill=HIJAU)
+        bulat(d, (16, 42, 54, 80), fill=HIJAU)
         m = logo('xyverse_mark', 24)
         _wallpaper['aktif'].alpha_composite(m, (35 - m.width // 2, 61 - m.height // 2))
     d.text((66, 40 if sub else 50), judul, font=font(F_SEMI, 18), fill=PUTIH)
@@ -85,16 +85,21 @@ def kartu(d, box, judul=None):
 def layar_masalah(sc, t, mode):
     im, d = kanvas()
     if mode == 0:
-        bar_atas(d, 'Grup Alumni 2019', '128 anggota, 3 baru bergabung')
-        y = 104
-        y = gelembung_teks(d, y, '+62 812-3xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, sc['t_vo'] + 0.3))
-        y = gelembung_teks(d, y, 'Kak, ada info kerja gaji 15jt, minat? Klik link di bio', muncul=pop(t, sc['t_vo'] + 0.5))
-        y = gelembung_teks(d, y, '+62 857-9xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, sc['t_vo'] + 0.9))
-        y = gelembung_teks(d, y, 'PROMO!!! gabung grup sebelah, hadiah tiap hari', muncul=pop(t, sc['t_vo'] + 1.1))
-        y = gelembung_teks(d, y, 'Halo semuanya... siapa ini yang masukin?', masuk=False, muncul=pop(t, sc['t_vo'] + 1.7))
-        if pop(t, sc['t_vo'] + 2.2) >= 1:
+        # hook: banjir spam judol jam 2 pagi, gelembung nyusul cepat (pop tiap ~0.15 dtk) + cap SPAM
+        bar_atas(d, 'Grup Alumni 2019', '128 anggota, 5 baru bergabung', waktu='02.00')
+        v, y = sc['t_vo'], 104
+        y = gelembung_teks(d, y, '+62 812-3xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, v + 0.25, 0.2), waktu='02.00')
+        y = gelembung_teks(d, y, 'SLOT GACOR 88 - DAFTAR SEKARANG BONUS NEW MEMBER 100%', muncul=pop(t, v + 0.4, 0.2), waktu='02.01')
+        y = gelembung_teks(d, y, 'WD 50JT CAIR TIAP HARI, BUKTI ADA, KLIK LINK', muncul=pop(t, v + 0.55, 0.2), waktu='02.01')
+        y = gelembung_teks(d, y, '+62 857-9xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, v + 0.75, 0.2), waktu='02.02')
+        y = gelembung_teks(d, y, 'Kak, ada info kerja gaji 15jt, minat? Klik link di bio', muncul=pop(t, v + 0.9, 0.2), waktu='02.02')
+        y = gelembung_teks(d, y, 'Halo... jam segini siapa yang masukin mereka?', masuk=False, muncul=pop(t, v + 1.5), waktu='02.03')
+        if pop(t, v + 2.2) >= 1:
             ikon_silang(d, SW - 50, y + 40, 26)
-            d.text((60, y + 30), 'admin lagi tidur, spam masuk terus', font=font(F_REG, 13), fill=MERAH)
+            d.text((60, y + 30), 'admin tidur, spam masuk terus', font=font(F_REG, 13), fill=MERAH)
+        u = e_back(pop(t, kapan(sc, 'judol', 2.0) + 0.1, 0.3))
+        if u > 0:
+            stempel(im, (SW / 2 + 30, 250), 'SPAM', MERAH, sudut=-14, skala=1.4 * u)
     elif mode == 1:
         bar_atas(d, 'Channel Kamu', '2.104 pengikut')
         kartu(d, (30, 300, SW - 30, 430))
@@ -178,14 +183,14 @@ def layar_pairing(sc, t, mode):
     for i, langkah in enumerate(('Perangkat tertaut', 'Tautkan perangkat', 'Tautkan dengan nomor telepon', 'Masukkan kode')):
         y = 354 + i * 38
         aktif = t >= awal - 1.6 + i * 0.4
-        d.ellipse((34, y + 4, 50, y + 20), fill=HIJAU_T if aktif else GARIS)
+        bulat(d, (34, y + 4, 50, y + 20), fill=HIJAU_T if aktif else GARIS)
         d.text((62, y), langkah, font=font(F_REG, 14), fill=TEKS if aktif else TEKS2)
     if mode >= 1:
         u = pop(t, sc['tahap_t'][0][0], 0.4)
         s = e_back(u)
         cy = 620
         r = 44 * s
-        d.ellipse((SW / 2 - r, cy - r, SW / 2 + r, cy + r), fill=HIJAU_T)
+        bulat(d, (SW / 2 - r, cy - r, SW / 2 + r, cy + r), fill=HIJAU_T)
         if u >= 1:
             ikon_centang(d, SW / 2, cy, 44)
             f = font(F_SEMI, 18)
@@ -244,7 +249,7 @@ def layar_grup(sc, t, mode):
         if u <= 0:
             continue
         kartu(d, (16, y, SW - 16, y + 84))
-        d.ellipse((30, y + 20, 74, y + 64), fill=GARIS)
+        bulat(d, (30, y + 20, 74, y + 64), fill=GARIS)
         d.text((88, y + 20), nama, font=font(F_SEMI, 15), fill=TEKS)
         d.text((88, y + 44), ket, font=font(F_REG, 13), fill=TEKS2)
         if t >= t_cek + 1.2 + i * 0.25 and t < t_tolak + i * 0.18:

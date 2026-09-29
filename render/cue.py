@@ -44,11 +44,11 @@ def bangun_cue(sc):
     c = [S(sc['t0'] + 0.05, 'whoosh')] + [S(t, 'pop') for t, _, _ in sc['tahap_t']]
     m = sc['layar']
     if m == 'masalah':
-        c += [S(v + d, 'pop') for d in (0.5, 1.1, 1.7)]
-        c += [S(k('aneh?', 2.5), 'vine-boom'), K(k('aneh?', 2.5), 'doraemon_masalah', 'ka'),
-              S(k('sepi?', 4.5), 'awkward-cricket-sound-effect', 1.6), K(k('sepi?', 4.5), 'read_aja', 'ki'),
-              S(k('lupa', 6.5), 'windows-10-error-sound', 1.2), K(k('lupa', 6.5), 'jackjack_marah', 'kb'),
-              S(k('Tenang,', 8.0), 'family-feud-good-answer'), S(k('satu', 8.6), 'ding')]
+        c += [S(v + d, 'pop') for d in (0.25, 0.4, 0.55, 0.75, 0.9, 1.5)]  # banjir spam, cepet
+        c += [S(k('judol', 2.0), 'vine-boom'), K(k('judol', 2.0) + 0.1, 'doraemon_masalah', 'ka'),
+              S(k('kuburan?', 5.0), 'awkward-cricket-sound-effect', 1.6), K(k('kuburan?', 5.0), 'read_aja', 'ki'),
+              S(k('lupa', 7.0), 'windows-10-error-sound', 1.2), K(k('lupa', 7.0), 'jackjack_marah', 'kb'),
+              S(k('Tenang.', 8.5), 'family-feud-good-answer'), S(k('Satu', 9.2), 'ding')]
     elif m == 'beranda':
         c += [S(k('Kenalin,', 0.2), 'tuturu_1'), S(k('Android.', 5.5), 'mantappu', 1.5),
               S(k('Nggak', 6.5), 'fahhhhh'), K(k('Nggak', 6.5), 'pepe_capek', 'ka', 3.2),
@@ -67,7 +67,7 @@ def bangun_cue(sc):
         c += [S(k('Permintaan', 2.5), 'emergency-meeting', 1.4), K(k('Permintaan', 2.5), 'plonga_plongo', 'ki', 2.4),
               S(k('Ditolak.', 7.0), 'buzz'), S(k('Ditolak.', 7.0) + 0.05, 'vine-boom'),
               K(k('Ditolak.', 7.0) + 0.05, 'pemaaf', 'tengah', 2.2),
-              S(k('Kamu', 9.0), 'respek', 1.5), K(k('Kamu', 9.0), 'gk_tau_gk_liat', 'ka', 3.0)]
+              S(k('Kamu', 10.0), 'respek', 1.5), K(k('Kamu', 10.0), 'gk_tau_gk_liat', 'ka', 3.0)]
     elif m == 'lagu':
         c += [S(k('sepi.', 1.5), 'cartoon-bonk'), K(k('sepi.', 1.5), 'sabar_menanti', 'ka'),
               S(k('ngirim', 3.0), 'pop'), S(k('ngirim', 3.0), 'sparkle-sound-effect', 1.2),
@@ -75,9 +75,10 @@ def bangun_cue(sc):
     elif m == 'caption':
         c += [S(k('galau,', 2.0), 'pop'), S(k('galau,', 2.0), 'sad-violin', 1.5), K(k('galau,', 2.0), 'kalo_suka_bilang', 'ki', 2.4),
               S(k('motivasi,', 3.0), 'pop'), S(k('motivasi,', 3.0), 'kids-saying-yay-sound-effect_3', 1.0),
-              S(k('nyindir,', 4.0), 'pop'), S(k('nyindir,', 4.0), 'tapi-boong-hahaha', 1.5), K(k('nyindir,', 4.0), 'alergi_buaya', 'ka', 2.6),
-              S(k('ayat.', 5.0), 'pop'), S(k('di-repeat?', 10.0), 'vine-boom'), K(k('di-repeat?', 10.0), 'pedih_sekali', 'tengah', 2.4),
-              S(k('di-repeat?', 10.0) + 0.4, 'ngakak-laugh-annoying', 1.8)]
+              S(k('ayat,', 4.0), 'pop'), S(k('nyindir.', 5.0), 'pop'), S(k('nyindir.', 5.0), 'tapi-boong-hahaha', 1.5),
+              K(k('nyindir.', 5.0), 'alergi_buaya', 'ka', 2.6), S(k('gini:', 7.5), 'klik'),
+              S(k('berdering,', 9.0), 'nokia-ringtone-1994', 1.3), S(k('miring.', 11.0), 'vine-boom'),
+              K(k('miring.', 11.0), 'pedih_sekali', 'tengah', 2.6), S(k('Hahaha,', 12.5), 'anjayhaha', 1.4)]
     elif m == 'lapor':
         g = k('gagal', 1.5)
         c += [S(g, 'windows-10-error-sound', 1.0), S(g + 0.5, 'cartoon-bonk'), S(g + 1.0, 'cartoon-bonk'),

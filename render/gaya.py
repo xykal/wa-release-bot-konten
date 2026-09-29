@@ -4,7 +4,7 @@ Kenapa dipisah: render.py / layar_*.py cuma mikirin komposisi; semua konstanta
 visual ada di satu tempat supaya ganti warna atau font nggak nyebar ke mana-mana.
 """
 import os
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageFilter
 
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 W, H, FPS = 720, 1280, 60
@@ -105,9 +105,69 @@ def bayangan_teks(draw, xy, teks, f, fill, bayang=(0, 0, 0), jarak=3):
     draw.text(xy, teks, font=f, fill=fill)
 
 
-# ---------- bentuk ----------
+# ---------- bentuk (anti-alias) ----------
+# ImageDraw nggak punya anti-alias buat bentuk. Caranya: mask digambar 3x lalu diperkecil (reduce), lalu
+# warna ditempel lewat mask itu ke gambar di balik `draw` (atribut _image, Pillow dipatok 12.3.0 di workflow).
+_mask = {}
+
+
+def _mask_bulat(w, h, r, elips=False):
+    k = (w, h, r, elips)
+    if k not in _mask:
+        if len(_mask) > 4000:
+            _mask.clear()
+        S = 3
+        big = Image.new('L', (w * S, h * S), 0)
+        dd = ImageDraw.Draw(big)
+        if elips:
+            dd.ellipse((0, 0, w * S - 1, h * S - 1), fill=255)
+        else:
+            dd.rounded_rectangle((0, 0, w * S - 1, h * S - 1), radius=r * S, fill=255)
+        _mask[k] = big.reduce(S)
+    return _mask[k]
+
+
+def _rgba(c):
+    return tuple(c) if len(c) == 4 else tuple(c) + (255,)
+
+
+def _isi(im, x0, y0, w, h, warna, mask):
+    warna = _rgba(warna)
+    lap = Image.new('RGBA', (w, h), warna)
+    lap.putalpha(mask if warna[3] == 255 else mask.point(lambda v: v * warna[3] // 255))
+    im.alpha_composite(lap, (x0, y0))
+
+
 def kotak(draw, box, r, fill=None, outline=None, lebar_garis=1):
-    draw.rounded_rectangle(box, radius=r, fill=fill, outline=outline, width=lebar_garis)
+    """Kotak sudut bulat anti-alias (fallback ke rounded_rectangle biasa kalau gambar bukan RGBA)."""
+    im = getattr(draw, '_image', None)
+    x0, y0 = int(round(box[0])), int(round(box[1]))
+    w, h = int(round(box[2])) - x0, int(round(box[3])) - y0
+    if im is None or im.mode != 'RGBA' or w < 2 or h < 2 or x0 < 0 or y0 < 0:
+        draw.rounded_rectangle(box, radius=r, fill=fill, outline=outline, width=lebar_garis)
+        return
+    r = int(min(r, w // 2, h // 2))
+    if fill:
+        _isi(im, x0, y0, w, h, fill, _mask_bulat(w, h, r))
+    if outline:
+        g = int(lebar_garis)
+        cincin = _mask_bulat(w, h, r).copy()
+        if w > 2 * g and h > 2 * g:  # cincin = mask luar dikurangi mask dalam → garis tepi doang, tengah tetap tembus
+            dalam = Image.new('L', (w, h), 0)
+            dalam.paste(_mask_bulat(w - 2 * g, h - 2 * g, max(0, r - g)), (g, g))
+            cincin = ImageChops.subtract(cincin, dalam)
+        _isi(im, x0, y0, w, h, outline, cincin)
+
+
+def bulat(draw, box, fill):
+    """Lingkaran/elips anti-alias."""
+    im = getattr(draw, '_image', None)
+    x0, y0 = int(round(box[0])), int(round(box[1]))
+    w, h = int(round(box[2])) - x0, int(round(box[3])) - y0
+    if im is None or im.mode != 'RGBA' or w < 2 or h < 2 or x0 < 0 or y0 < 0:
+        draw.ellipse(box, fill=fill)
+        return
+    _isi(im, x0, y0, w, h, fill, _mask_bulat(w, h, 0, elips=True))
 
 
 def pil_tembus(ukuran):
@@ -152,13 +212,45 @@ def chip(draw, x, y, teks, f, fill=KARTU, warna=TEKS, pad=14):
     return lb
 
 
+_ikon = {}
+
+
+def _sprite_ikon(jenis, r, warna, tebal):
+    k = (jenis, r, warna, tebal)
+    if k not in _ikon:
+        S, m = 3, 2
+        uk = (2 * r + 2 * m) * S
+        big = pil_tembus((uk, uk))
+        dd = ImageDraw.Draw(big)
+        c = uk / 2
+        dd.ellipse((m * S, m * S, uk - m * S, uk - m * S), fill=warna + (255,))
+        rr, tb = r * S, tebal * S
+        if jenis == 'centang':
+            dd.line([(c - rr * .45, c), (c - rr * .1, c + rr * .38), (c + rr * .5, c - rr * .35)], fill=BG + (255,), width=tb, joint='curve')
+        else:
+            q = rr * .42
+            dd.line([(c - q, c - q), (c + q, c + q)], fill=BG + (255,), width=tb)
+            dd.line([(c - q, c + q), (c + q, c - q)], fill=BG + (255,), width=tb)
+        _ikon[k] = big.reduce(S)
+    return _ikon[k]
+
+
+def _tempel_ikon(draw, jenis, cx, cy, r, warna, tebal):
+    im = getattr(draw, '_image', None)
+    sp = _sprite_ikon(jenis, int(r), warna, int(tebal))
+    if im is None or im.mode != 'RGBA':
+        draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=warna)
+        return
+    x, y = int(cx - sp.width / 2), int(cy - sp.height / 2)
+    if x >= 0 and y >= 0:
+        im.alpha_composite(sp, (x, y))
+    else:
+        im.paste(sp, (x, y), sp)
+
+
 def ikon_centang(draw, cx, cy, r, warna=HIJAU_T, tebal=6):
-    draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=warna)
-    draw.line([(cx - r * .45, cy), (cx - r * .1, cy + r * .38), (cx + r * .5, cy - r * .35)], fill=BG, width=tebal, joint='curve')
+    _tempel_ikon(draw, 'centang', cx, cy, r, warna, tebal)
 
 
 def ikon_silang(draw, cx, cy, r, warna=MERAH, tebal=6):
-    draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=warna)
-    k = r * .42
-    draw.line([(cx - k, cy - k), (cx + k, cy + k)], fill=BG, width=tebal)
-    draw.line([(cx - k, cy + k), (cx + k, cy - k)], fill=BG, width=tebal)
+    _tempel_ikon(draw, 'silang', cx, cy, r, warna, tebal)
