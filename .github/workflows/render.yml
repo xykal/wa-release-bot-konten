@@ -1,0 +1,66 @@
+# Render video TikTok di runner GitHub: ffmpeg sudah terpasang di ubuntu-24.04,
+# 4 core dipakai paralel oleh render.py. Hasilnya SATU file MP4 di Artifacts.
+name: Render TikTok
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'render/**'
+      - 'vo/**'
+      - 'fonts/**'
+      - '.github/workflows/render.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: Render 720p60
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Dependensi (versi dipatok)
+        run: pip install --no-cache-dir --disable-pip-version-check 'Pillow==12.3.0' 'numpy==2.5.3'
+
+      - name: ffmpeg tersedia
+        run: ffmpeg -hide_banner -version | head -n 1
+
+      - name: Timeline + cek semua scene (1 frame / 2 detik, tanpa encode)
+        run: |
+          python3 render/render.py --info
+          python3 render/render.py --cek 2
+
+      - name: Render penuh
+        run: python3 render/render.py
+
+      - name: Verifikasi hasil (durasi, resolusi, ada audio)
+        run: |
+          ffprobe -v error -show_entries stream=codec_type,width,height,r_frame_rate:format=duration \
+            -of default=noprint_wrappers=1 keluaran/tiktok-wa-release-bot-eps2.mp4 | tee probe.txt
+          grep -q 'codec_type=audio' probe.txt
+          grep -q 'width=720' probe.txt
+          grep -q 'height=1280' probe.txt
+
+      - name: Unggah MP4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: tiktok-wa-release-bot-eps2
+          path: keluaran/tiktok-wa-release-bot-eps2.mp4
+          if-no-files-found: error
+          retention-days: 30
