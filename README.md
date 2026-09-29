@@ -13,8 +13,12 @@ Sengaja dipisah dari repo produk: media, VO, dan naskah promosi tidak ikut repo 
 - `vo/NN.wav` — AI voice-over, one file per scene. Word timing for the karaoke subtitle is
   estimated from the audio energy (`render/audio.py`), so the text in `naskah.py` must match
   the audio word for word.
+- `render/cue.py` — per-scene cues (meme SFX, WhatsApp meme stickers, confetti) locked to spoken words;
+  `render/fx.py` — kinetic titles, punch-in zoom, shake, flash, floating clay icons from the app.
+- `render/aset.py` + `aset/manifest.json` — third-party stickers/SFX are NOT committed: downloaded at
+  render time and verified by sha256 (`python3 render/aset.py --unduh`). `aset/logo/` = original app assets.
 - `render/render.py` — draws every frame with Pillow (720x1280, 60 fps), pipes them to ffmpeg
-  in parallel chunks, then muxes the mix (VO + synthesized SFX + soft synthesized pad).
+  in parallel chunks (`render/encode.py`), then muxes the mix (VO + SFX + soft synthesized pad).
 - `.github/workflows/render.yml` — renders on GitHub Actions and uploads ONE artifact:
   `tiktok-wa-release-bot-eps2` (MP4). Runs on every push to `main` that touches render files,
   or manually via *Run workflow*.
@@ -22,6 +26,7 @@ Sengaja dipisah dari repo produk: media, VO, dan naskah promosi tidak ikut repo 
 Local checks without ffmpeg / cek lokal tanpa ffmpeg:
 
 ```bash
+python3 render/aset.py --unduh           # fetch stickers + SFX into aset/cache (gitignored)
 python3 render/render.py --info          # timeline
 python3 render/render.py --cek 2         # draw one frame every 2 s, catch errors
 python3 render/render.py --frame 51 f.png

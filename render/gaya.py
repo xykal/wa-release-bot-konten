@@ -162,28 +162,3 @@ def ikon_silang(draw, cx, cy, r, warna=MERAH, tebal=6):
     k = r * .42
     draw.line([(cx - k, cy - k), (cx + k, cy + k)], fill=BG, width=tebal)
     draw.line([(cx - k, cy + k), (cx + k, cy - k)], fill=BG, width=tebal)
-
-
-def perisai(ukuran, warna=HIJAU_T):
-    """Stiker perisai + centang (maskot 'dijaga bot'), digambar sendiri: nggak ada aset pihak ketiga."""
-    s = ukuran
-    im = pil_tembus((s, s))
-    d = ImageDraw.Draw(im)
-    p = [(s * .5, s * .05), (s * .9, s * .2), (s * .86, s * .58), (s * .5, s * .95), (s * .14, s * .58), (s * .1, s * .2)]
-    d.polygon(p, fill=warna + (255,))
-    d.polygon([(x * .82 + s * .09, y * .82 + s * .09) for x, y in p], fill=HIJAU_TUA + (255,))
-    d.line([(s * .33, s * .5), (s * .45, s * .63), (s * .68, s * .36)], fill=(255, 255, 255, 255), width=int(s * .07), joint='curve')
-    return im
-
-
-def nada(ukuran, warna=HIJAU_T):
-    """Stiker not musik sederhana."""
-    s = ukuran
-    im = pil_tembus((s, s))
-    d = ImageDraw.Draw(im)
-    d.ellipse((s * .12, s * .62, s * .42, s * .88), fill=warna + (255,))
-    d.ellipse((s * .55, s * .55, s * .85, s * .81), fill=warna + (255,))
-    d.rectangle((s * .36, s * .12, s * .43, s * .75), fill=warna + (255,))
-    d.rectangle((s * .79, s * .05, s * .86, s * .68), fill=warna + (255,))
-    d.polygon([(s * .36, s * .12), (s * .86, s * .05), (s * .86, s * .2), (s * .36, s * .27)], fill=warna + (255,))
-    return im

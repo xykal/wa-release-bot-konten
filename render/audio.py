@@ -1,17 +1,17 @@
-"""Timeline + audio: VO dari vo/*.wav, waktu per kata, SFX & musik sintetis.
+"""Timeline + audio: VO dari vo/*.wav, waktu per kata, SFX (sintetis + file myinstants), musik latar.
 
-Semua SFX dan musik latar dibuat dari numpy (sinus, noise, envelope) supaya
-tidak ada satu pun aset audio pihak ketiga di repo ini — pelajaran dari audit
-repo produk (SFX meme tanpa lisensi). Kualitasnya sederhana, tapi bersih.
+SFX sintetis dibuat dari numpy (sinus, noise, envelope). SFX meme dari myinstants
+diambil lewat aset.py (diunduh saat render, nggak disimpan di repo).
 """
 import math
 import os
 import wave
 import numpy as np
-from naskah import SCENES, JEDA_AWAL, JEDA_AKHIR, OUTRO, KARAKTER_PER_DETIK
+from aset import SR, sfx as sfx_file
+from cue import bangun_cue, kapan, _bersih  # noqa: F401 — kapan di-re-export buat layar_*.py
+from naskah import SCENES, INTRO, JEDA_AWAL, JEDA_AKHIR, OUTRO, KARAKTER_PER_DETIK
 
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SR = 24000
 
 
 def baca_wav(path):
@@ -25,10 +25,6 @@ def baca_wav(path):
     return a
 
 
-def _bersih(k):
-    return k.strip('.,?!:;"\'()').lower()
-
-
 def waktu_kata(a, teks):
     """Taksir waktu tiap kata dari energi sinyal: bagian bicara dipetakan ke kata
     sebanding panjang hurufnya. Bukan ASR, tapi cukup buat sorotan karaoke."""
@@ -37,7 +33,8 @@ def waktu_kata(a, teks):
     fr = SR // 100
     if len(a) < fr * 5:
         return _rata(kata, 0, dur)
-    rms = np.sqrt(np.convolve(a ** 2, np.ones(fr) / fr, 'same')[::fr])
+    blok = np.pad(a, (0, (-len(a)) % fr)) ** 2
+    rms = np.sqrt(blok.reshape(-1, fr).mean(axis=1))
     bicara = rms >= max(0.01, rms.max() * 0.06)
     idx = np.nonzero(bicara)[0]
     if len(idx) < 5:
@@ -60,7 +57,7 @@ def _rata(kata, mulai, dur):
 
 def bangun_timeline():
     """Balikin (scenes, total). Tiap scene dapat: t0, t_vo, t1, kata (absolut), tahap_t, cue."""
-    hasil, kursor = [], 0.0
+    hasil, kursor = [], INTRO
     for s in SCENES:
         path = os.path.join(AKAR, 'vo', s['vo'] + '.wav')
         if os.path.exists(path):
@@ -75,45 +72,10 @@ def bangun_timeline():
             cocok = [x for k, x, _ in kata if _bersih(k) == _bersih(pemicu)]
             tahap_t.append((cocok[0] if cocok else t_vo + dur * 0.6, judul, mode))
         sc = dict(s, t0=kursor, t_vo=t_vo, dur_vo=dur, t1=t_vo + dur + JEDA_AKHIR, kata=kata, tahap_t=tahap_t, sinyal=a)
-        sc['cue'] = _cue_scene(sc)
+        sc['cue'] = bangun_cue(sc)
         hasil.append(sc)
         kursor = sc['t1']
     return hasil, kursor + OUTRO
-
-
-def kapan(sc, pemicu, cadangan=0.5):
-    """Waktu absolut kata `pemicu` diucapkan (kemunculan pertama)."""
-    for k, x, _ in sc['kata']:
-        if _bersih(k) == _bersih(pemicu):
-            return x
-    return sc['t_vo'] + cadangan
-
-
-def _cue_scene(sc):
-    """Cue SFX per scene — sinkron dengan yang digambar layar_*.py (pakai fungsi `kapan` yang sama)."""
-    c = [(sc['t0'] + 0.05, 'whoosh')]
-    c += [(t, 'pop') for t, _, _ in sc['tahap_t']]
-    m = sc['layar']
-    if m == 'masalah':
-        c += [(sc['t_vo'] + d, 'pop') for d in (0.5, 1.1, 1.7)]
-    elif m == 'pairing':
-        awal = kapan(sc, 'masukin', 2.0)
-        c += [(awal + 0.45 + i * 0.13, 'klik') for i in range(8)] + [(kapan(sc, 'Selesai!', 8.0), 'ding')]
-    elif m == 'rilis':
-        c += [(kapan(sc, 'posting', 3.0), 'whoosh'), (kapan(sc, 'channel.', 4.0) + 0.1, 'ding')]
-    elif m == 'grup':
-        c += [(kapan(sc, 'Ditolak.', 7.0), 'buzz'), (kapan(sc, 'Kamu', 9.0), 'ding')]
-    elif m == 'lagu':
-        c += [(kapan(sc, 'ngirim', 3.0), 'pop')]
-    elif m == 'caption':
-        c += [(kapan(sc, k, 2 + i), 'pop') for i, k in enumerate(('galau,', 'motivasi,', 'nyindir,', 'ayat.'))]
-    elif m == 'lapor':
-        c += [(kapan(sc, 'lapor', 3.0), 'ding'), (kapan(sc, 'tidur.', 7.0), 'zzz')]
-    elif m == 'github':
-        c += [(kapan(sc, 'gratis,', 2.0), 'sparkle')]
-    elif m == 'cta':
-        c += [(kapan(sc, 'Follow,', 5.0), 'sparkle')]
-    return c
 
 
 # ---------- sintesis SFX ----------
@@ -122,7 +84,7 @@ def _env(n, serang=0.005, lepas=0.15):
     return np.minimum(t / serang, 1.0) * np.exp(-t / lepas)
 
 
-def _sfx(nama, rng):
+def _sintetis(nama, rng):
     if nama == 'pop':
         n = int(0.09 * SR); t = np.arange(n) / SR
         f = 520 * np.exp(-t * 18) + 160
@@ -155,7 +117,24 @@ def _sfx(nama, rng):
     if nama == 'zzz':
         n = int(0.9 * SR); t = np.arange(n) / SR
         return 0.25 * np.sin(2 * np.pi * 330 * t * (1 - 0.15 * t)) * np.sin(2 * np.pi * 3 * t) ** 2 * _env(n, 0.05, 0.6)
-    return np.zeros(1, np.float32)
+    return None
+
+
+def _sfx(nama, potong, rng):
+    """SFX sintetis, atau file myinstants: dinormalisasi ke puncak 0.5, dipotong maks `potong` dtk + fade 0.25 dtk."""
+    y = _sintetis(nama, rng)
+    if y is not None:
+        return y.astype(np.float32)
+    y = sfx_file(nama)
+    if y is None or len(y) == 0:
+        return np.zeros(1, np.float32)
+    y = y[:int(potong * SR)].astype(np.float32).copy()
+    puncak = float(np.abs(y).max()) or 1.0
+    y *= 0.5 / puncak
+    n_fade = min(len(y), int(0.25 * SR))
+    y[-n_fade:] *= np.linspace(1, 0, n_fade, dtype=np.float32)
+    y[:int(0.005 * SR)] *= np.linspace(0, 1, int(0.005 * SR), dtype=np.float32)
+    return y
 
 
 def musik(total, rng):
@@ -194,11 +173,13 @@ def campur(scenes, total, path_keluar, dengan_musik=True):
     rng = np.random.default_rng(7)
     sfx = np.zeros(n, np.float32)
     for sc in scenes:
-        for t, nama in sc['cue']:
-            y = _sfx(nama, rng).astype(np.float32); s = int(t * SR)
+        for c in sc['cue']:
+            if c[0] != 'sfx':
+                continue
+            y = _sfx(c[2], c[3], rng); s = int(c[1] * SR)
             if 0 <= s < n:
                 sfx[s:s + len(y)] += y[:n - s]
-    out = vo * 0.95 + sfx * 0.5
+    out = vo * 0.95 + sfx * 0.6
     if dengan_musik:
         m = musik(total, rng)
         fr = SR // 20

@@ -8,6 +8,7 @@ from gaya import (font, F_BLACK, F_SEMI, F_REG, BG, BG2, KARTU, GARIS, HIJAU, HI
                   TEKS, TEKS2, MERAH, KUNING, PUTIH, kotak, bungkus, prog, e_out, e_back, ikon_centang,
                   ikon_silang, chip, lebar)
 from audio import kapan
+from aset import logo
 
 SW, SH = 400, 760
 _wallpaper = {}
@@ -23,6 +24,7 @@ def kanvas():
                 d.ellipse((x, y, x + 3, y + 3), fill=(24, 36, 43, 255))
         _wallpaper['w'] = im
     im = _wallpaper['w'].copy()
+    _wallpaper['aktif'] = im  # dipakai bar_atas buat nempel logo (ImageDraw nggak bisa paste)
     return im, ImageDraw.Draw(im)
 
 
@@ -31,6 +33,11 @@ def bar_atas(d, judul, sub='', warna=HIJAU_TUA):
     d.text((18, 7), '12.00', font=font(F_SEMI, 14), fill=TEKS)
     d.rectangle((0, 30, SW, 92), fill=warna)
     d.ellipse((16, 42, 54, 80), fill=KARTU)
+    if judul in ('WA Release Bot', 'Tautkan perangkat', 'Channel Kamu') and 'aktif' in _wallpaper:
+        # avatar = mark XyVerse asli dari app, bukan lingkaran kosong
+        d.ellipse((16, 42, 54, 80), fill=HIJAU)
+        m = logo('xyverse_mark', 24)
+        _wallpaper['aktif'].alpha_composite(m, (35 - m.width // 2, 61 - m.height // 2))
     d.text((66, 40 if sub else 50), judul, font=font(F_SEMI, 18), fill=PUTIH)
     if sub:
         d.text((66, 64), sub, font=font(F_REG, 13), fill=(200, 230, 220))
@@ -139,13 +146,17 @@ def layar_beranda(sc, t, mode):
             u = pop(t, tm)
             if u <= 0:
                 continue
-            y = 400 + i * 74
+            y = 392 + i * 62
             s = e_back(u)
             lb = 300 * s
-            kotak(d, (SW / 2 - lb / 2, y, SW / 2 + lb / 2, y + 58), 14, fill=KARTU)
+            kotak(d, (SW / 2 - lb / 2, y, SW / 2 + lb / 2, y + 52), 14, fill=KARTU)
             if u >= 1:
-                ikon_silang(d, 56, y + 29, 18)
-                d.text((88, y + 17), 'nggak perlu ' + teks, font=font(F_SEMI, 17), fill=TEKS)
+                ikon_silang(d, 56, y + 26, 16)
+                d.text((84, y + 15), 'nggak perlu ' + teks, font=font(F_SEMI, 16), fill=TEKS)
+    kartu(d, (16, 584, SW - 16, 690), 'Aktivitas terakhir')
+    for i, baris in enumerate(('14.02  rilis v1.7.0 diposting ke channel', '13.30  lagu harian terkirim (Risalah Hati)',
+                               '13.05  permintaan gabung: 1 ditolak')):
+        d.text((32, 616 + i * 22), baris, font=font(F_REG, 12), fill=TEKS2)
     d.text((32, 700), 'Node.js jalan di dalam APK-nya', font=font(F_REG, 13), fill=TEKS2)
     d.text((32, 720), 'bukan Termux, bukan VPS', font=font(F_REG, 13), fill=TEKS2)
     return im
@@ -245,12 +256,15 @@ def layar_grup(sc, t, mode):
             else:
                 ikon_silang(d, SW - 60, y + 42, 18)
                 d.text((SW - 170, y + 34), 'DITOLAK', font=font(F_BLACK, 13), fill=MERAH)
+    kartu(d, (16, 500, SW - 16, 588), 'Penjaga grup')
+    d.text((32, 534), 'aktif 24 jam  ·  hari ini 3 diterima, 2 ditolak', font=font(F_REG, 13), fill=TEKS2)
+    d.text((32, 556), 'alasan tolak: pernah keluar / pernah di-kick', font=font(F_REG, 13), fill=TEKS2)
     if mode >= 2:
         u = pop(t, sc['tahap_t'][1][0])
         if u > 0:
-            kotak(d, (30, 560, SW - 30, 640), 14, fill=HIJAU_TUA)
-            d.text((48, 576), 'Grup aman.', font=font(F_SEMI, 17), fill=PUTIH)
-            d.text((48, 602), 'dicek tiap beberapa menit, tanpa kamu buka HP', font=font(F_REG, 12), fill=(200, 230, 220))
+            kotak(d, (30, 620, SW - 30, 700), 14, fill=HIJAU_TUA)
+            d.text((48, 636), 'Grup aman.', font=font(F_SEMI, 17), fill=PUTIH)
+            d.text((48, 662), 'dicek tiap beberapa menit, tanpa kamu buka HP', font=font(F_REG, 12), fill=(200, 230, 220))
     return im
 
 

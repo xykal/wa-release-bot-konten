@@ -49,8 +49,12 @@ SCENES = [
          teks='Menurut kamu, fitur apa lagi yang harus ditambahin? Tulis di komen ya. Follow, biar nggak ketinggalan episode berikutnya!'),
 ]
 
-# Jeda sebelum VO mulai di tiap scene, jeda setelah VO habis, dan outro (logo + CTA diam).
-JEDA_AWAL, JEDA_AKHIR, OUTRO = 0.35, 0.45, 1.6
+# Intro logo XyVerse (sebelum scene 00), jeda sebelum VO mulai di tiap scene, jeda setelah VO habis, outro (logo + CTA).
+INTRO, JEDA_AWAL, JEDA_AKHIR, OUTRO = 1.4, 0.35, 0.45, 2.2
+
+# Ilustrasi asli dari app (aset/logo/) yang nongol di pojok kanan atas tiap scene; None = judul pakai lebar penuh.
+ILUS = {'masalah': None, 'beranda': 'ilus_hosting', 'pairing': 'melayang_kode', 'rilis': 'ilus_rilis', 'grup': 'ilus_grup',
+        'lagu': 'ilus_lagu', 'caption': 'melayang_chat', 'lapor': 'melayang_bulan', 'github': 'melayang_kode', 'cta': 'melayang_bintang'}
 
 # Kalau file VO belum ada (klip belum dibuat), durasi ditaksir dari panjang teks.
 KARAKTER_PER_DETIK = 13.5

@@ -11,6 +11,7 @@ on:
       - 'render/**'
       - 'vo/**'
       - 'fonts/**'
+      - 'aset/**'
       - '.github/workflows/render.yml'
 
 permissions:
@@ -49,6 +50,15 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ffmpeg >/dev/null
           ffmpeg -hide_banner -version | head -n 1
           ffprobe -hide_banner -version | head -n 1
+
+      - name: Cache aset pihak ketiga (stiker + SFX, kunci = hash manifest)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: aset/cache
+          key: aset-${{ hashFiles('aset/manifest.json') }}
+
+      - name: Unduh aset pihak ketiga yang belum ada (sha256 dicek, tidak di-commit)
+        run: python3 render/aset.py --unduh
 
       - name: Timeline + cek semua scene (1 frame / 2 detik, tanpa encode)
         run: |

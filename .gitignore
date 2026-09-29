@@ -2,4 +2,5 @@ keluaran/
 __pycache__/
 *.pyc
 *.mp4
+aset/cache/
 .DS_Store

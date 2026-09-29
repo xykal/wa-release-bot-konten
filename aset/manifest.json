@@ -1,0 +1,237 @@
+{
+ "catatan": "Aset pihak ketiga TIDAK disimpan di repo: diunduh saat render dan dicek sha256-nya. Lihat THIRD_PARTY_NOTICES.md.",
+ "sfx": [
+  {
+   "nama": "vine-boom",
+   "url": "https://www.myinstants.com/media/sounds/vine-boom.mp3",
+   "sha256": "c4dadbc0b9cd21b1313ec11845a00d9401bc208ae0f59f54a0282b8cb89d56c2"
+  },
+  {
+   "nama": "anjayhaha",
+   "url": "https://www.myinstants.com/media/sounds/anjayhaha.mp3",
+   "sha256": "3ad3f747b00e2654b722d4c364780b6c0aee0d2d0f7127ffb3f282a8fe620c6d"
+  },
+  {
+   "nama": "emotional-damage-meme",
+   "url": "https://www.myinstants.com/media/sounds/emotional-damage-meme.mp3",
+   "sha256": "e1668d57edc60539f3e218fbc51c5c97fbe5cb56d63b7b2c85608afbdecbf4d8"
+  },
+  {
+   "nama": "sad-violin",
+   "url": "https://www.myinstants.com/media/sounds/sad-violin.mp3",
+   "sha256": "071c779b6e9108ff4eed37a237e7fa1ab3e672ca48ec4fae99901f92c8150a68"
+  },
+  {
+   "nama": "windows-10-error-sound",
+   "url": "https://www.myinstants.com/media/sounds/windows-10-error-sound.mp3",
+   "sha256": "725fa0651a928100785c6cf4f3a8b72766234f4e38747220616925a1588b5b81"
+  },
+  {
+   "nama": "discord-notification",
+   "url": "https://www.myinstants.com/media/sounds/discord-notification.mp3",
+   "sha256": "8f4d3150992cf86049b5a7beca5d0e9343b78e8dd9243f6dbe4d03a310ffaee1"
+  },
+  {
+   "nama": "mantappu",
+   "url": "https://www.myinstants.com/media/sounds/mantappu.mp3",
+   "sha256": "1bf9c6838d68ddf4200b219e9277f57472f496bb43fc54e816767f355635fb87"
+  },
+  {
+   "nama": "original-sheesh",
+   "url": "https://www.myinstants.com/media/sounds/original-sheesh.mp3",
+   "sha256": "bd41fe670d57ad4b458b57a98d9f55601041f1c9b445bb5fba8e571e9e9ce48c"
+  },
+  {
+   "nama": "record-scratch",
+   "url": "https://www.myinstants.com/media/sounds/record-scratch.mp3",
+   "sha256": "6f460b5121a26b4cf3c5e0474fe3c576dc16fc0c3145087cb8deda872477f65d"
+  },
+  {
+   "nama": "fahhhhh",
+   "url": "https://www.myinstants.com/media/sounds/fahhhhh.mp3",
+   "sha256": "8881b4cd586d1b26862972820fbb6b94017af7d284aa26440676af297beb7aac"
+  },
+  {
+   "nama": "tuturu_1",
+   "url": "https://www.myinstants.com/media/sounds/tuturu_1.mp3",
+   "sha256": "70537ce7197ccddc1ace2aad9ebcda92e0bed69480014f4051b1f3d473eb7440"
+  },
+  {
+   "nama": "rizz-sound-effect",
+   "url": "https://www.myinstants.com/media/sounds/rizz-sound-effect.mp3",
+   "sha256": "dbbde7a7920b680ab42a6b8cab49dbd59e24841878bb622fb889669f9fae286f"
+  },
+  {
+   "nama": "anime-wow-sound-effect",
+   "url": "https://www.myinstants.com/media/sounds/anime-wow-sound-effect.mp3",
+   "sha256": "5118c619f0ab62e181f32d9eacd490441b49aaa7bb8e1be1b6b51e7a3c25debc"
+  },
+  {
+   "nama": "kids-saying-yay-sound-effect_3",
+   "url": "https://www.myinstants.com/media/sounds/kids-saying-yay-sound-effect_3.mp3",
+   "sha256": "3029aafb117205e93b3a59b57a167b79ab0e58a062e6dd97170893fb7e97eb0b"
+  },
+  {
+   "nama": "cartoon-bonk",
+   "url": "https://www.myinstants.com/media/sounds/cartoon-bonk.mp3",
+   "sha256": "a118c7e9514e979626910eec6bcca6b0ec330f7dbcb2ce3aa104c4034d23a7ef"
+  },
+  {
+   "nama": "sparkle-sound-effect",
+   "url": "https://www.myinstants.com/media/sounds/sparkle-sound-effect.mp3",
+   "sha256": "ac5919b49cc42915c0ea8ea0d37d19756fd22d156d28876c816962c20ed8dfa9"
+  },
+  {
+   "nama": "fast-whoosh",
+   "url": "https://www.myinstants.com/media/sounds/fast-whoosh.mp3",
+   "sha256": "64c4ea6f62da8f7f7e05b0c47dd43276bdde692af755daec87c75fbebf64dbd2"
+  },
+  {
+   "nama": "pop_7e9Is8L",
+   "url": "https://www.myinstants.com/media/sounds/pop_7e9Is8L.mp3",
+   "sha256": "6d0369350e1e0d5c5c1bb5e487df5d10b36d9d2d142b68b3fa9572f7acccb0ec"
+  },
+  {
+   "nama": "ding-sound-effect_2",
+   "url": "https://www.myinstants.com/media/sounds/ding-sound-effect_2.mp3",
+   "sha256": "bf9c08a6b942f6c875b07e35de5ebbc3a009c7567a0e9d1a69ff79c0c79e9e81"
+  },
+  {
+   "nama": "emergency-meeting",
+   "url": "https://www.myinstants.com/media/sounds/emergency-meeting.mp3",
+   "sha256": "8118d5e0d8e417153e605b05ca501ab7af0702097efc86ba97a7c7a814b179c0"
+  },
+  {
+   "nama": "tapi-boong-hahaha",
+   "url": "https://www.myinstants.com/media/sounds/tapi-boong-hahaha.mp3",
+   "sha256": "1e5bcd05cb4838e1271d4602b0695c9c7e38f734a73c939b784bfca39e154aa5"
+  },
+  {
+   "nama": "respek",
+   "url": "https://www.myinstants.com/media/sounds/respek.mp3",
+   "sha256": "3df353b68b0350ce15b4c7b81bf2dd7c4e061a97fcd252c4c41912ab3614a723"
+  },
+  {
+   "nama": "awkward-cricket-sound-effect",
+   "url": "https://www.myinstants.com/media/sounds/awkward-cricket-sound-effect.mp3",
+   "sha256": "b703d6f8c9b9979660bd05f4c779903eebb9624725dd5660d81938c646ca85be"
+  },
+  {
+   "nama": "family-feud-good-answer",
+   "url": "https://www.myinstants.com/media/sounds/family-feud-good-answer.mp3",
+   "sha256": "edf9350368a27e759d95ed098071ad53d40f56b1f4e69360a84672cd36bb9415"
+  },
+  {
+   "nama": "ngakak-laugh-annoying",
+   "url": "https://www.myinstants.com/media/sounds/ngakak-laugh-annoying.mp3",
+   "sha256": "676ab5ad288cf0aabf232e6e9f6ce46a2ac0f895b6e4515c4e0af993892cebd2"
+  },
+  {
+   "nama": "yeay",
+   "url": "https://www.myinstants.com/media/sounds/yeay.mp3",
+   "sha256": "a61e69efcc41f6f373e43fcdabb996b5ed33f770e6962e7749ff3305118016c6"
+  },
+  {
+   "nama": "omgwow",
+   "url": "https://www.myinstants.com/media/sounds/omgwow.mp3",
+   "sha256": "6e539643e3d5a93edd97ad5fd924bf568a8340fd6ab08f0e933dc03e911d3c96"
+  }
+ ],
+ "stiker": [
+  {
+   "nama": "bayar",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_1.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "fa06b6da7d2a37c52be6749e84f76ed5cbd4f2e24c4ee11775adbbe60c82456b"
+  },
+  {
+   "nama": "pemaaf",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_2.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "f9162a4ecc57ae8ad1365a0a1926f617edd0b84f5932af2814fa1c2e9c849da9"
+  },
+  {
+   "nama": "doraemon_masalah",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_6.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "093c948a3830686d6db77190bea000670d8b8c94086cb91e64d7d56b53c50a87"
+  },
+  {
+   "nama": "permisi_seumur_hidup",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_7.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "aa30a00ec626fd85a24cd157efc26a4bc48d1788bb21841a20f01a8fca3992aa"
+  },
+  {
+   "nama": "jaka_sembung",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_8.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "85d06bce3ce7a6edafb7dd2f37a711ece0bece46c557b637d4c4073106a825ed"
+  },
+  {
+   "nama": "sambil_nangis",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_10.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "e2195291d4f5f3cad91bcb9d6ab8354ecb46ad5af6bc0ef65c127b04eee5872c"
+  },
+  {
+   "nama": "plonga_plongo",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_11.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "a7a6e368e097be216b5f8b6b6d2069d3610622daa3266a65ae31afc8ee9bde21"
+  },
+  {
+   "nama": "kalo_suka_bilang",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_13.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "0ff8e5059ad00f4bdf782a1c690b3b457fb2c79fa31f30fe2a7fddcb2aa21c84"
+  },
+  {
+   "nama": "alergi_buaya",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_14.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "6cd8fa0439b7421612de6d55dbecd2466ec15572dd7ce222643761d1caf6251d"
+  },
+  {
+   "nama": "maaciii",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_15.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "3283f9462648f31940cc50d471b72b1073ef1431453be26d0d3b7d24e152c56c"
+  },
+  {
+   "nama": "baru_bangun",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_16.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "af4502ee69a4ede9cae10da03e3bc5dec4c17298994c462cf03cc5d1a7f445c5"
+  },
+  {
+   "nama": "read_aja",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_17.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "f8a1e539efce48bafaed682d8374266b1a302529f93c6e8dcc368478e6157aeb"
+  },
+  {
+   "nama": "pedih_sekali",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_19.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "2c7becc9ce42d0fc169a917c934e0300fa6625d9703b264a5199684e41da6163"
+  },
+  {
+   "nama": "gk_tau_gk_liat",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_20.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "8122968aa6586ed88047d66dae3e18ca89181db9da60d06628f422cf8720a188"
+  },
+  {
+   "nama": "sakitin_lagi",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_21.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "30e5d8abbd51940eb37ab248387bb54da49f73b0736ba6614ace5bede0785eaa"
+  },
+  {
+   "nama": "jackjack_marah",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_23.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "6c72e64e662a07f8b434168943c0d60e66822052d5aad0e791289ab278da5f17"
+  },
+  {
+   "nama": "pepe_capek",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_24.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "bb6545463f4f81bbc384587229576f7ba451307de09370c63ac1e60fa361bebd"
+  },
+  {
+   "nama": "mau_tium",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_25.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "7ad1efb83782346bbb34ec42cf82b973368a563d96e685ebd41eff591f55df04"
+  },
+  {
+   "nama": "sabar_menanti",
+   "url": "https://s3.getstickerpack.com/storage/uploads/sticker-pack/meme-receh-indo/sticker_26.webp?08f4de5e53f015a9174337b280c4c7d9",
+   "sha256": "5cb8f7c61046e97b5d32e368c8d6d38b4dbaa1ccdd9aaa1fcc379f9887b35b60"
+  }
+ ]
+}
