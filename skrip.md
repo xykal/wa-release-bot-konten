@@ -10,9 +10,11 @@ Sumber kebenaran naskah = `render/naskah.py` (teks VO harus sama persis dengan f
 
 | # | Judul di layar | Layar HP | VO |
 |---|---|---|---|
-| 00 | Grup kemasukan akun judol? → Channel sepi? → Rilis lupa diumumin? → Satu bot, semuanya beres | hook: banjir spam judol jam 02.00 + cap SPAM, channel kosong, rilis GitHub nganggur, 3 kartu solusi | Grup kamu kemasukan akun judol jam dua pagi? Channel sepi kayak kuburan? Rilis aplikasi lupa diumumin? Tenang. Satu bot, semuanya beres. |
+| 00 | Grup kemasukan akun j*dol? (disamarkan) → Channel sepi? → Rilis lupa diumumin? → Satu bot, semuanya beres | hook: banjir spam promo (teks disensor pakai *) jam 02.00 + cap SPAM, channel kosong, rilis GitHub nganggur, 3 kartu solusi | Grup kamu kemasukan akun spam jam dua pagi? Channel sepi kayak kuburan? Rilis aplikasi lupa diumumin? Tenang. Satu bot, semuanya beres. |
 | 01 | Kenalin, WA Release Bot → Jalan dari HP, tanpa server | beranda app: tersambung, repo dipantau, coret server/laptop/Termux | Kenalin, WA Release Bot. Bot bikinan Kall yang jalan langsung dari HP Android. Nggak perlu server, nggak perlu laptop, nggak perlu Termux. |
 | 02 | Nyambung pakai kode pairing → Selesai. Bot siap kerja | kode pairing diketik, langkah di WA, centang tersambung | Nyambunginnya gampang. Buka aplikasinya, masukin kode pairing, persis kayak nambah perangkat WhatsApp biasa. Selesai! Botnya langsung siap kerja. |
+| 02b | Kok bisa tanpa server? → Baileys + Kotlin di dalam APK | diagram isi APK: Kotlin → Node.js 18 (nodejs-mobile) → Baileys 6.7 → WhatsApp, chip bukan Termux/VPS/laptop | Kok bisa jalan tanpa server? Di dalam APK-nya ada Node.js beneran. Bot-nya pakai Baileys buat nyambung ke WhatsApp, dan Kotlin yang jaga biar tetap hidup di background. |
+| 02c | Cara kerjanya simpel → Caption dibikin AI | siklus 15 menit (bangun, cek rilis, cek grup, kirim lagu, tidur) + kartu Cloudflare Worker → Groq AI | Cara kerjanya simpel. Tiap lima belas menit bot bangun: cek rilis di GitHub, cek permintaan gabung, kirim lagu harian, terus tidur lagi. Caption-nya dibikin AI lewat Cloudflare Worker. |
 | 03 | Rilis GitHub auto ke channel → Post-nya rapi: catatan + file | kartu release terbang, post channel format baru (apa yang baru, file + ukuran) | Tiap kamu rilis versi baru di GitHub, bot langsung posting ke channel. Rapi banget: apa yang baru, file yang bisa diunduh, sampai ukurannya. |
 | 04 | Penjaga grup otomatis → Pernah keluar? Ditolak. → Grup aman tanpa dipantau | daftar permintaan gabung, "ngecek...", DITOLAK / centang, stiker perisai | Buat grup, ada penjaga otomatis. Permintaan gabung dicek satu-satu. Yang dulu udah keluar, atau pernah di-kick? Ditolak. Hehe. Kamu nggak perlu mantengin lagi. |
 | 05 | Tiap hari ada lagu → 148 lagu + yang lagi trend | voice note kemarin & hari ini, kartu 148 lagu, chip trend, stiker not | Channel kamu nggak bakal sepi. Tiap hari bot ngirim potongan lagu enam puluh detik, dalam bentuk voice note. Ada seratus empat puluh delapan lagu, plus yang lagi trend minggu ini. |
@@ -39,7 +41,7 @@ Eps 3: cara pasangnya langkah demi langkah, atau fitur lain? Vote di balasan.
 
 1. Nyalakan label "Konten yang dibuat AI" (suaranya AI). Jangan tulis "link di bio"/"download" di caption; arahkan ke komentar pin.
 2. Video sudah ada musik latar pelan (sintetis, bebas lisensi). Kalau mau pasang sound yang lagi ramai, set volume sound tambahan 10-15% supaya narasi tetap jelas.
-3. Sampul: ambil frame di detik 2-3 (cap SPAM + judul "Grup kemasukan akun judol?") atau detik 56 (DITOLAK + stiker).
+3. Sampul: ambil frame di detik 2-3 (cap SPAM + judul "Grup kemasukan akun j*dol?") atau detik 56 (DITOLAK + stiker).
 4. Jam posting yang biasanya ramai: 11.00-13.00 atau 19.00-21.00 WIB.
 5. Balas komentar pakai video balasan; itu bahan Eps 3.
 6. Jangan hapus lalu upload ulang video yang sama; kalau sepi, bikin versi hook beda.

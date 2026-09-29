@@ -80,31 +80,6 @@ def bungkus(teks, f, maks):
     return baris
 
 
-def teks_sorot(draw, x, y, teks, f, warna=TEKS, sorot=HIJAU_T, tengah=True):
-    """Tulis satu baris; kata di antara *bintang* diwarnai `sorot`. Balikin tinggi baris."""
-    potongan, tebal, buf = [], False, ''
-    for ch in teks:
-        if ch == '*':
-            if buf:
-                potongan.append((buf, tebal))
-            buf, tebal = '', not tebal
-        else:
-            buf += ch
-    if buf:
-        potongan.append((buf, tebal))
-    total = sum(lebar(p, f) for p, _ in potongan)
-    cx = x - total / 2 if tengah else x
-    for p, tb in potongan:
-        draw.text((cx, y), p, font=f, fill=sorot if tb else warna)
-        cx += lebar(p, f)
-    return f.size + 6
-
-
-def bayangan_teks(draw, xy, teks, f, fill, bayang=(0, 0, 0), jarak=3):
-    draw.text((xy[0] + jarak, xy[1] + jarak), teks, font=f, fill=bayang)
-    draw.text(xy, teks, font=f, fill=fill)
-
-
 # ---------- bentuk (anti-alias) ----------
 # ImageDraw nggak punya anti-alias buat bentuk. Caranya: mask digambar 3x lalu diperkecil (reduce), lalu
 # warna ditempel lewat mask itu ke gambar di balik `draw` (atribut _image, Pillow dipatok 12.3.0 di workflow).

@@ -45,7 +45,7 @@ def bangun_cue(sc):
     m = sc['layar']
     if m == 'masalah':
         c += [S(v + d, 'pop') for d in (0.25, 0.4, 0.55, 0.75, 0.9, 1.5)]  # banjir spam, cepet
-        c += [S(k('judol', 2.0), 'vine-boom'), K(k('judol', 2.0) + 0.1, 'doraemon_masalah', 'ka'),
+        c += [S(k('spam', 2.0), 'vine-boom'), K(k('spam', 2.0) + 0.1, 'doraemon_masalah', 'ka'),
               S(k('kuburan?', 5.0), 'awkward-cricket-sound-effect', 1.6), K(k('kuburan?', 5.0), 'read_aja', 'ki'),
               S(k('lupa', 7.0), 'windows-10-error-sound', 1.2), K(k('lupa', 7.0), 'jackjack_marah', 'kb'),
               S(k('Tenang.', 8.5), 'family-feud-good-answer'), S(k('Satu', 9.2), 'ding')]
@@ -59,12 +59,19 @@ def bangun_cue(sc):
         c += [S(k('Nyambunginnya', 0.2), 'anjayhaha', 1.7), K(k('Nyambunginnya', 0.2), 'jaka_sembung', 'ka', 3.0),
               S(k('Selesai!', 8.0), 'family-feud-good-answer'), S(k('Selesai!', 8.0) + 0.15, 'yeay'),
               ('konfeti', k('Selesai!', 8.0), 360, 620), S(k('kerja.', 9.8), 'discord-notification')]
+    elif m == 'stack':
+        c += [K(k('Kok', 0.2), 'plonga_plongo', 'ka', 2.2), S(k('APK-nya', 2.5), 'pop'), S(k('Node.js', 3.5), 'omgwow', 1.4),
+              S(k('Baileys', 6.0), 'pop'), S(k('WhatsApp,', 7.5), 'discord-notification'), S(k('Kotlin', 9.0), 'pop'),
+              S(k('background.', 11.0), 'ding')]
+    elif m == 'kerja':
+        c += [S(k('bangun:', 3.0), 'pop'), S(k('GitHub,', 4.5), 'discord-notification'), S(k('gabung,', 6.0), 'pop'),
+              S(k('harian,', 7.5), 'pop'), S(k('tidur', 9.0), 'zzz'), S(k('AI', 11.5), 'sparkle'), S(k('Worker.', 13.0), 'ding')]
     elif m == 'rilis':
         c += [S(k('posting', 3.0), 'whoosh'), S(k('channel.', 4.0) + 0.1, 'discord-notification'),
               S(k('Rapi', 5.0), 'original-sheesh', 1.6), K(k('Rapi', 5.0) + 0.3, 'mau_tium', 'kb'),
               S(k('ukurannya.', 9.5), 'ding')]
     elif m == 'grup':
-        c += [S(k('Permintaan', 2.5), 'emergency-meeting', 1.4), K(k('Permintaan', 2.5), 'plonga_plongo', 'ki', 2.4),
+        c += [S(k('Permintaan', 2.5), 'emergency-meeting', 1.4),
               S(k('Ditolak.', 7.0), 'buzz'), S(k('Ditolak.', 7.0) + 0.05, 'vine-boom'),
               K(k('Ditolak.', 7.0) + 0.05, 'pemaaf', 'tengah', 2.2),
               S(k('Kamu', 10.0), 'respek', 1.5), K(k('Kamu', 10.0), 'gk_tau_gk_liat', 'ka', 3.0)]

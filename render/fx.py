@@ -18,13 +18,13 @@ _c = {}
 
 
 def _potong_kata(teks):
-    """'Grup *akun aneh?*' → [('Grup', False), ('akun', True), ('aneh?', True)]"""
+    """'Grup ~akun aneh?~' → [('Grup', False), ('akun', True), ('aneh?', True)]"""
     hasil, sorot = [], False
     for kata in teks.split():
-        awal = kata.startswith('*'); akhir = '*' in kata[1:]  # 'HP*,' juga nutup sorotan
+        awal = kata.startswith('~'); akhir = '~' in kata[1:]  # 'HP~,' juga nutup sorotan
         if awal:
             sorot = True
-        hasil.append((kata.replace('*', ''), sorot))
+        hasil.append((kata.replace('~', ''), sorot))
         if akhir:
             sorot = False
     return hasil
@@ -130,8 +130,10 @@ def konfeti(im, sc, t):
             d.polygon(pts, fill=warna + (a,))
 
 
-def ikon_melayang(im, t, alpha=1.0):
+def ikon_melayang(im, t, alpha=1.0, kecuali=None):
     for nama, x, y, uk, fase in MELAYANG:
+        if nama == kecuali:  # ikon yang lagi jadi ilustrasi judul nggak usah dobel
+            continue
         img = logo(nama, uk)
         tempel(im, img, (x, y + math.sin(t * 0.9 + fase) * 9), alpha)
 

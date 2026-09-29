@@ -23,10 +23,11 @@ from cue import efek_dari_cue, kapan
 from fx import judul_kinetik, gambar_ilus, gambar_stiker, konfeti, ikon_melayang, efek_pasca
 from layar_a import LAYAR_A, SW, SH
 from layar_b import LAYAR_B
+from layar_c import LAYAR_C
 from naskah import INTRO, OUTRO, ILUS
 
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LAYAR = {**LAYAR_A, **LAYAR_B}
+LAYAR = {**LAYAR_A, **LAYAR_B, **LAYAR_C}
 SCENES, TOTAL = bangun_timeline()
 EFEK = [e for sc in SCENES for e in efek_dari_cue(sc['cue'])]
 PX, PY = (W - SW) // 2, 262  # posisi isi layar HP
@@ -130,43 +131,53 @@ def _layar_transisi(sc, i, t):
     return out
 
 
+def _halaman_sub(sc, f):
+    """Pecah kata jadi halaman 1 baris, maks 4 kata / muat lebar — gaya caption CapCut. Di-cache per scene."""
+    if '_hal' not in sc:
+        hal, kini = [], []
+        for k, (w, a, b) in enumerate(sc['kata']):
+            coba = ' '.join([x for x, _ in kini] + [w]).upper()
+            akhir_kalimat = kini and kini[-1][0][-1] in '.?!:'  # ganti halaman di akhir kalimat biar pas sama napas narator
+            if kini and (akhir_kalimat or len(kini) >= 4 or lebar(coba, f) > W - 150):
+                hal.append(kini)
+                kini = []
+            kini.append((w, k))
+        if kini:
+            hal.append(kini)
+        sc['_hal'] = hal
+    return sc['_hal']
+
+
 def gambar_subtitle(im, sc, t):
-    """Karaoke 2 baris: kata aktif hijau + sedikit membesar, kata lewat putih, kata belum abu."""
-    f = font(F_SEMI, 27)
+    """Caption 1 baris, huruf besar, stroke hitam tebal; kata aktif dapat kotak hijau yang nge-pop; halaman masuk membesar."""
     kata = sc['kata']
-    if not kata:
+    if not kata or t < sc['t0'] + 0.1 or t > sc['t1'] - 0.1:
         return
-    baris, kini = [], []
-    for k, (w, a, b) in enumerate(kata):
-        coba = ' '.join([x for x, _ in kini] + [w])
-        if kini and lebar(coba, f) > W - 96:
-            baris.append(kini)
-            kini = []
-        kini.append((w, k))
-    if kini:
-        baris.append(kini)
-    sekarang = max([k for k, (w, a, b) in enumerate(kata) if a <= t] or [-1])
-    baris_kini = next((n for n, br in enumerate(baris) if any(k == sekarang for _, k in br)), 0)
-    hal = baris_kini // 2
-    tampil = baris[hal * 2: hal * 2 + 2]
-    alpha = e_out(prog(t, sc['t0'] + 0.1, 0.3)) * (1 - prog(t, sc['t1'] - 0.15, 0.15))
-    lap = pil_tembus((W, 130))
+    f0 = font(F_BLACK, 30)
+    hal = _halaman_sub(sc, f0)
+    sekarang = max([k for k, (w, a, b) in enumerate(kata) if a <= t] or [0])
+    br = next((h for h in hal if any(k == sekarang for _, k in h)), hal[0])
+    t_hal = kata[br[0][1]][1]
+    s = 0.9 + 0.1 * e_back(prog(t, t_hal, 0.18), 1.3)
+    f = font(F_BLACK, int(30 * s))
+    sp = int(14 * s)
+    kata_up = [(w.upper(), k) for w, k in br]
+    total = sum(lebar(w, f) for w, _ in kata_up) + sp * (len(kata_up) - 1)
+    lap = pil_tembus((W, 110))
     d = ImageDraw.Draw(lap)
-    kotak(d, (24, 0, W - 24, 18 + len(tampil) * 40), 20, fill=(0, 0, 0, 165))
-    for n, br in enumerate(tampil):
-        y = 9 + n * 40
-        teks = ' '.join(w for w, _ in br)
-        x = W / 2 - lebar(teks, f) / 2
-        for w, k in br:
-            if k == sekarang:
-                pop = 1 + 0.16 * (1 - e_out(prog(t, kata[k][1], 0.16)))
-                fk = font(F_SEMI, int(27 * pop))
-                d.text((x + (lebar(w, f) - lebar(w, fk)) / 2 + 2, y - (fk.size - 27) / 2 + 2), w, font=fk, fill=(0, 0, 0, 200))
-                d.text((x + (lebar(w, f) - lebar(w, fk)) / 2, y - (fk.size - 27) / 2), w, font=fk, fill=HIJAU_T + (255,))
-            else:
-                d.text((x, y), w, font=f, fill=(TEKS if k < sekarang else TEKS2) + (255,))
-            x += lebar(w + ' ', f)
-    tempel(im, lap, (0, 1122), alpha)
+    x, y = W / 2 - total / 2, 55 - f.size / 2
+    for w, k in kata_up:
+        lw = lebar(w, f)
+        if k == sekarang:
+            u = e_back(prog(t, kata[k][1], 0.14), 1.6)
+            pw, ph = (lw + 22) * u, (f.size + 18) * u
+            kotak(d, (x + lw / 2 - pw / 2, 55 - ph / 2, x + lw / 2 + pw / 2, 55 + ph / 2), 10, fill=HIJAU_T)
+            d.text((x, y), w, font=f, fill=BG + (255,))
+        else:
+            d.text((x, y), w, font=f, fill=(TEKS if k < sekarang else (215, 222, 226)) + (255,), stroke_width=5, stroke_fill=(0, 0, 0, 255))
+        x += lw + sp
+    alpha = e_out(prog(t, sc['t0'] + 0.1, 0.25)) * (1 - prog(t, sc['t1'] - 0.2, 0.1))
+    tempel(im, lap, (0, 1108), alpha)
 
 
 def gambar_sting(im, t):
@@ -234,8 +245,8 @@ def frame(t):
     im = latar()
     tempel(im, _cache['glow'], (W / 2 - 260 + math.sin(t * 0.5) * 30, 380 + math.cos(t * 0.4) * 30), 0.55)
     tempel(im, _cache['glow2'], (-40 + math.sin(t * 0.3) * 20, 900), 0.6)
-    ikon_melayang(im, t, e_out(prog(t, INTRO + 0.3, 0.6)))
     i, sc = scene_pada(t)
+    ikon_melayang(im, t, e_out(prog(t, INTRO + 0.3, 0.6)), kecuali=ILUS.get(sc['layar']))
     gambar_hp(im, t)
     if t < TOTAL - OUTRO + 0.2:
         (t_j, judul, _), t_next = judul_pada(sc, t)

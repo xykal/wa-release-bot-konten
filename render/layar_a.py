@@ -85,19 +85,19 @@ def kartu(d, box, judul=None):
 def layar_masalah(sc, t, mode):
     im, d = kanvas()
     if mode == 0:
-        # hook: banjir spam judol jam 2 pagi, gelembung nyusul cepat (pop tiap ~0.15 dtk) + cap SPAM
+        # hook: banjir spam (teks promo disamarkan pakai * biar nggak kena moderasi TikTok) jam 2 pagi, gelembung nyusul cepat (pop tiap ~0.15 dtk) + cap SPAM
         bar_atas(d, 'Grup Alumni 2019', '128 anggota, 5 baru bergabung', waktu='02.00')
         v, y = sc['t_vo'], 104
         y = gelembung_teks(d, y, '+62 812-3xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, v + 0.25, 0.2), waktu='02.00')
-        y = gelembung_teks(d, y, 'SLOT GACOR 88 - DAFTAR SEKARANG BONUS NEW MEMBER 100%', muncul=pop(t, v + 0.4, 0.2), waktu='02.01')
-        y = gelembung_teks(d, y, 'WD 50JT CAIR TIAP HARI, BUKTI ADA, KLIK LINK', muncul=pop(t, v + 0.55, 0.2), waktu='02.01')
+        y = gelembung_teks(d, y, 'SL*T G*C*R 88 - D*FTAR SEKARANG B*NUS NEW MEMBER 100%', muncul=pop(t, v + 0.4, 0.2), waktu='02.01')
+        y = gelembung_teks(d, y, 'WD 50JT C*IR TIAP HARI, BUKTI ADA, KLIK LINK', muncul=pop(t, v + 0.55, 0.2), waktu='02.01')
         y = gelembung_teks(d, y, '+62 857-9xxx-xxxx bergabung lewat tautan', ukuran=12, warna=BG, muncul=pop(t, v + 0.75, 0.2), waktu='02.02')
         y = gelembung_teks(d, y, 'Kak, ada info kerja gaji 15jt, minat? Klik link di bio', muncul=pop(t, v + 0.9, 0.2), waktu='02.02')
         y = gelembung_teks(d, y, 'Halo... jam segini siapa yang masukin mereka?', masuk=False, muncul=pop(t, v + 1.5), waktu='02.03')
         if pop(t, v + 2.2) >= 1:
             ikon_silang(d, SW - 50, y + 40, 26)
             d.text((60, y + 30), 'admin tidur, spam masuk terus', font=font(F_REG, 13), fill=MERAH)
-        u = e_back(pop(t, kapan(sc, 'judol', 2.0) + 0.1, 0.3))
+        u = e_back(pop(t, kapan(sc, 'spam', 2.0) + 0.1, 0.3))
         if u > 0:
             stempel(im, (SW / 2 + 30, 250), 'SPAM', MERAH, sudut=-14, skala=1.4 * u)
     elif mode == 1:
@@ -145,6 +145,12 @@ def layar_beranda(sc, t, mode):
     d.text((32, 288), 'target: Channel Kamu', font=font(F_REG, 13), fill=TEKS2)
     d.text((32, 308), 'rilis terakhir: v1.7.0', font=font(F_REG, 13), fill=TEKS2)
     chip(d, 32, 334, 'Cek sekarang', font(F_SEMI, 13), fill=HIJAU, warna=PUTIH)
+    if mode == 0:  # sebelum kartu "nggak perlu" muncul, area tengah diisi jadwal (fakta default app)
+        kartu(d, (16, 392, SW - 16, 566), 'Jadwal bot')
+        for i, (a, b) in enumerate((('cek rilis GitHub', 'tiap 15 menit'), ('cek permintaan gabung', 'tiap 5 menit'), ('lagu + caption', 'sekali sehari'))):
+            d.text((32, 426 + i * 42), a, font=font(F_SEMI, 14), fill=TEKS)
+            d.text((32, 446 + i * 42), b, font=font(F_REG, 12), fill=TEKS2)
+            ikon_centang(d, SW - 48, 440 + i * 42, 11)
     if mode >= 1:
         t_m = sc['tahap_t'][0][0]
         for i, (teks, tm) in enumerate((('server', t_m), ('laptop', kapan(sc, 'laptop,', 8.0)), ('Termux', kapan(sc, 'Termux.', 9.0)))):
