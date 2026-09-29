@@ -1,7 +1,9 @@
 # Naskah Eps 2 — "Satu bot buat grup, channel, dan rilis"
 
-Format: 720x1280, 60 fps, satu file `tiktok-wa-release-bot-eps2.mp4`. Durasi mengikuti
-panjang VO (lihat `python3 render/render.py --info`), sekitar 1 menit 55 detik.
+Format: 720x1280, 60 fps. Dua potongan dari naskah dan VO yang sama:
+`tiktok-wa-release-bot-eps2.mp4` (penuh, 12 scene, sekitar 2 menit 30 detik) dan
+`tiktok-wa-release-bot-eps2-pendek.mp4` (pendek, scene 00-01-03-04-05-09, sekitar 1 menit
+13 detik, buat FYP). Durasi mengikuti panjang VO (lihat `python3 render/render.py --info`).
 Narator satu suara (AI, perempuan, Bahasa Indonesia santai) untuk semua scene —
 tidak ada suara lain, termasuk saat menyebut nama pembuat.
 

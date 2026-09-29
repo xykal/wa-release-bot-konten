@@ -19,9 +19,11 @@ Sengaja dipisah dari repo produk: media, VO, dan naskah promosi tidak ikut repo 
   render time and verified by sha256 (`python3 render/aset.py --unduh`). `aset/logo/` = original app assets.
 - `render/render.py` — draws every frame with Pillow (720x1280, 60 fps), pipes them to ffmpeg
   in parallel chunks (`render/encode.py`), then muxes the mix (VO + SFX + soft synthesized pad).
-- `.github/workflows/render.yml` — renders on GitHub Actions and uploads ONE artifact:
-  `tiktok-wa-release-bot-eps2` (MP4). Runs on every push to `main` that touches render files,
-  or manually via *Run workflow*.
+- `.github/workflows/render.yml` — renders on GitHub Actions, two cuts of the same script and
+  voice-over (`POTONGAN` in `render/naskah.py`): `tiktok-wa-release-bot-eps2` (full, ~2:30) and
+  `tiktok-wa-release-bot-eps2-pendek` (short, ~1:13, for FYP), one MP4 artifact each. Runs on
+  every push to `main` that touches render files, or manually via *Run workflow*.
+  Locally: `EPS2_POTONGAN=pendek python3 render/render.py`.
 
 Local checks without ffmpeg / cek lokal tanpa ffmpeg:
 

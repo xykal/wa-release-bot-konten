@@ -10,6 +10,7 @@ import time
 from multiprocessing import Pool
 
 import render
+from naskah import NAMA_FILE, NAMA_POTONGAN
 from audio import campur
 from gaya import W, H, FPS
 
@@ -57,7 +58,7 @@ def render_penuh(keluar):
 
 
 def info():
-    print(f'total {render.TOTAL:.2f} dtk, {int(render.TOTAL * FPS)} frame @ {FPS} fps, {W}x{H}')
+    print(f'potongan {NAMA_POTONGAN} -> {NAMA_FILE}.mp4: total {render.TOTAL:.2f} dtk, {int(render.TOTAL * FPS)} frame @ {FPS} fps, {W}x{H}')
     for sc in render.SCENES:
         n_s = sum(1 for c in sc['cue'] if c[0] == 'stiker'); n_f = sum(1 for c in sc['cue'] if c[0] == 'sfx')
         print(f"  {sc['vo']} {sc['t0']:6.2f}-{sc['t1']:6.2f}  vo {sc['dur_vo']:5.2f}  {sc['layar']:8s} sfx {n_f:2d} stiker {n_s}")
@@ -75,4 +76,4 @@ def main(arg):
             render.frame(t); n += 1; t += langkah
         print(f'cek {n} frame ok, rata-rata {(time.time() - mulai) / n * 1000:.0f} ms/frame')
     else:
-        render_penuh(os.path.join(render.AKAR, 'keluaran', 'tiktok-wa-release-bot-eps2.mp4'))
+        render_penuh(os.path.join(render.AKAR, 'keluaran', NAMA_FILE + '.mp4'))

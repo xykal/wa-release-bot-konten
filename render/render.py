@@ -1,6 +1,7 @@
 """Komposisi frame video TikTok Eps 2 — 720x1280 @ 60 fps.
 
 Pakai:  python3 render/render.py            → keluaran/tiktok-wa-release-bot-eps2.mp4 (butuh ffmpeg, lihat encode.py)
+        EPS2_POTONGAN=pendek python3 render/render.py  → keluaran/tiktok-wa-release-bot-eps2-pendek.mp4 (6 scene, ~1:13)
         python3 render/render.py --cek 2    → gambar 1 frame tiap 2 detik tanpa encode (uji cepat)
         python3 render/render.py --frame 47.5 cek.png
         python3 render/render.py --info     → cetak timeline

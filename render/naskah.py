@@ -5,6 +5,7 @@ per kata buat subtitle karaoke dihitung dari file suaranya (lihat audio.py).
 Kata di antara ~tilde~ di judul disorot hijau (bukan '*', biar 'j*dol' bisa ditulis). `tahap` = daftar (kata_pemicu, judul, mode_layar): begitu narator sampai di
 kata itu, judul dan layar ganti. Kata pemicu dicocokkan tanpa tanda baca.
 """
+import os
 
 SCENES = [
     dict(vo='00', layar='masalah',
@@ -56,6 +57,20 @@ SCENES = [
          tahap=[('Follow', '~Follow~ buat episode berikutnya', 1)],
          teks='Menurut kamu, fitur apa lagi yang harus ditambahin? Tulis di komen ya. Follow, biar nggak ketinggalan episode berikutnya!'),
 ]
+
+# Dua potongan dari naskah yang sama (VO tidak direkam ulang):
+#   penuh  = 12 scene (~2:30), versi lengkap dengan stack + cara kerja;
+#   pendek = 6 scene (~1:13) buat FYP: tiga janji di hook (spam grup, channel
+#            sepi, rilis lupa) masing-masing dijawab satu scene, lalu CTA.
+# Pilih lewat env EPS2_POTONGAN=pendek (default penuh). Dipakai render.py dan
+# encode.py (nama file keluaran), jadi satu sumber di sini.
+POTONGAN = {'penuh': None, 'pendek': ['00', '01', '03', '04', '05', '09']}
+NAMA_POTONGAN = os.environ.get('EPS2_POTONGAN', 'penuh').strip() or 'penuh'
+if NAMA_POTONGAN not in POTONGAN:
+    raise SystemExit(f"EPS2_POTONGAN={NAMA_POTONGAN!r} tidak dikenal; pilihan: {', '.join(POTONGAN)}")
+if POTONGAN[NAMA_POTONGAN]:
+    SCENES = [s for s in SCENES if s['vo'] in POTONGAN[NAMA_POTONGAN]]
+NAMA_FILE = 'tiktok-wa-release-bot-eps2' + ('' if NAMA_POTONGAN == 'penuh' else '-' + NAMA_POTONGAN)
 
 # Intro sebelum scene 00 (0 = hook langsung, logo XyVerse muncul sebagai sting di scene 01), jeda sebelum VO mulai di tiap scene, jeda setelah VO habis, outro (logo + CTA).
 INTRO, JEDA_AWAL, JEDA_AKHIR, OUTRO = 0.0, 0.35, 0.45, 2.2

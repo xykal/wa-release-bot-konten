@@ -27,9 +27,17 @@ defaults:
 
 jobs:
   render:
-    name: Render 720p60
+    # Dua potongan dari naskah + VO yang sama (lihat POTONGAN di render/naskah.py):
+    # penuh ~2:30 dan pendek ~1:13 buat FYP. Paralel, artefak terpisah.
+    name: Render 720p60 (${{ matrix.potongan }})
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        potongan: [penuh, pendek]
+    env:
+      EPS2_POTONGAN: ${{ matrix.potongan }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -70,8 +78,10 @@ jobs:
 
       - name: Verifikasi hasil (durasi, resolusi, ada audio)
         run: |
+          NAMA=$(python3 -c 'import sys; sys.path.insert(0, "render"); from naskah import NAMA_FILE; print(NAMA_FILE)')
+          echo "NAMA=$NAMA" >> "$GITHUB_ENV"
           ffprobe -v error -show_entries stream=codec_type,width,height,r_frame_rate:format=duration \
-            -of default=noprint_wrappers=1 keluaran/tiktok-wa-release-bot-eps2.mp4 | tee probe.txt
+            -of default=noprint_wrappers=1 "keluaran/$NAMA.mp4" | tee probe.txt
           grep -q 'codec_type=audio' probe.txt
           grep -q 'width=720' probe.txt
           grep -q 'height=1280' probe.txt
@@ -79,7 +89,7 @@ jobs:
       - name: Unggah MP4
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: tiktok-wa-release-bot-eps2
-          path: keluaran/tiktok-wa-release-bot-eps2.mp4
+          name: ${{ env.NAMA }}
+          path: keluaran/${{ env.NAMA }}.mp4
           if-no-files-found: error
           retention-days: 30
